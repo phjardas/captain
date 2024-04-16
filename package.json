@@ -2,6 +2,9 @@
   "name": "captain",
   "private": true,
   "type": "module",
+  "scripts": {
+    "generate": "tsx scripts/generate-game-data.ts"
+  },
   "devDependencies": {
     "@types/node": "^20.12.7",
     "prettier": "^3.2.5",

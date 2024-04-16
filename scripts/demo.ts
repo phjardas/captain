@@ -1,10 +1,10 @@
 import {
-  CalculatorOutput,
   calculate,
   combineOutputs,
   type CalculatorInput,
-} from "./calculator.js";
-import { loadGame } from "./data/index.js";
+  type CalculatorOutput,
+} from "../src/calculator.js";
+import { loadGame } from "../src/game/index.js";
 
 const game = await loadGame();
 
@@ -12,42 +12,11 @@ const inputs: Array<{ name: string; input: CalculatorInput }> = [
   {
     name: "Construction Parts",
     input: {
-      machines: [
-        { machine: "assembly_electric", quantity: 6, recipe: "cp_assembly_t2" },
-        {
-          machine: "assembly_electric",
-          quantity: 8,
-          recipe: "cp2_assembly_t1",
-        },
-        {
-          machine: "assembly_electric",
-          quantity: 2,
-          recipe: "cp3_assembly_t1",
-        },
-        {
-          machine: "assembly_electric",
-          quantity: 6,
-          recipe: "electronics_assembly_t1",
-        },
-      ],
-    },
-  },
-  {
-    name: "Concrete Slabs",
-    input: {
-      machines: [
-        { machine: "concrete_mixer", quantity: 8, recipe: "concrete_mixing" },
-        { machine: "crusher", quantity: 3, recipe: "slag_crushing" },
-        { machine: "rotary_kiln", quantity: 4, recipe: "cement_production" },
-      ],
-    },
-  },
-  {
-    name: "Iron",
-    input: {
-      machines: [
-        { machine: "blast_furnace", quantity: 4, recipe: "iron_smelting" },
-        { machine: "metal_caster", quantity: 8, recipe: "iron_casting" },
+      recipes: [
+        { quantity: 6, recipe: "cp_assembly_t2" },
+        { quantity: 4, recipe: "cp2_assembly_t1_2" },
+        { quantity: 2, recipe: "cp3_assembly_t1" },
+        { quantity: 2, recipe: "electronics_assembly_t2" },
       ],
     },
   },
@@ -59,7 +28,9 @@ const outputs = inputs.map(({ name, input }) => {
   return output;
 });
 
-print("TOTAL", combineOutputs(...outputs));
+if (outputs.length > 1) {
+  print("TOTAL", combineOutputs(...outputs));
+}
 
 function print(title: string, output: CalculatorOutput) {
   console.log();
@@ -87,16 +58,20 @@ function print(title: string, output: CalculatorOutput) {
 
   console.log();
   console.log("Buildings:");
-  output.machines.forEach(({ machine, quantity, recipe }) =>
+  output.recipes.forEach(({ machine, quantity, recipe }) =>
     console.log(
       "%s %s: %s",
       quantity.toString().padStart(2),
-      game.getMachine(machine).name,
-      game.getRecipe(recipe).name
+      machine.name,
+      recipe.name
     )
   );
 
   console.log();
+
+  if (output.workers > 0) {
+    console.log("Workers: %d", output.workers);
+  }
 
   if (output.electricityProduction !== 0) {
     console.log(
@@ -108,7 +83,7 @@ function print(title: string, output: CalculatorOutput) {
 
   if (output.computingProduction !== 0) {
     console.log(
-      "Computing %s: %d kW",
+      "Computing %s: %d TFLOPS",
       output.computingProduction > 0 ? "production" : "consumption",
       Math.abs(output.computingProduction)
     );

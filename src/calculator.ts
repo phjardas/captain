@@ -1,39 +1,49 @@
-import { Game, Production } from "./data/types.js";
+import type { Game, Machine, Production, Recipe } from "./game/types.js";
 
 export type CalculatorInput = {
-  machines: ReadonlyArray<{
-    machine: string;
-    recipe: string;
-    quantity: number;
-  }>;
+  recipes: ReadonlyArray<{ recipe: string; quantity: number }>;
 };
 
-export type CalculatorOutput = CalculatorInput & {
+export type OutputRecipe = {
+  machine: Machine;
+  recipe: Recipe;
+  quantity: number;
+};
+
+export type CalculatorOutput = {
+  recipes: ReadonlyArray<OutputRecipe>;
   electricityProduction: number;
   computingProduction: number;
+  workers: number;
 } & Production;
 
 export function calculate(
   game: Game,
   input: CalculatorInput
 ): CalculatorOutput {
-  const machines = input.machines.map((machineInput) => ({
-    machine: game.getMachine(machineInput.machine),
-    recipe: game.getRecipe(machineInput.recipe),
-    quantity: machineInput.quantity,
-  }));
+  const recipes: ReadonlyArray<OutputRecipe> = input.recipes.map(
+    (recipeInput) => {
+      const recipe = game.getRecipe(recipeInput.recipe);
+      const machine = game.getMachine(recipe.machine);
+      return { machine, recipe, quantity: recipeInput.quantity };
+    }
+  );
 
   return {
-    ...input,
+    recipes,
     ...sumProduction(
-      ...machines.map((m) => multiplyProduction(m.recipe, m.quantity))
+      ...recipes.map((m) => multiplyProduction(m.recipe, m.quantity))
     ),
-    electricityProduction: machines.reduce(
-      (sum, m) => sum + m.machine.electricityProduction,
+    electricityProduction: recipes.reduce(
+      (sum, m) => sum + m.quantity * m.machine.electricityProduction,
       0
     ),
-    computingProduction: machines.reduce(
-      (sum, m) => sum + m.machine.computingProduction,
+    computingProduction: recipes.reduce(
+      (sum, m) => sum + m.quantity * m.machine.computingProduction,
+      0
+    ),
+    workers: recipes.reduce(
+      (sum, m) => sum + m.quantity * m.machine.workers,
       0
     ),
   };
@@ -42,24 +52,22 @@ export function calculate(
 export function combineOutputs(
   ...outputs: Array<CalculatorOutput>
 ): CalculatorOutput {
-  const machines = outputs
-    .flatMap((o) => o.machines)
+  const recipes = outputs
+    .flatMap((o) => o.recipes)
     .reduce(
-      (agg, machine) =>
-        agg.some(
-          (m) => m.machine === machine.machine && m.recipe === machine.recipe
-        )
-          ? agg.map((m) =>
-              m.machine === machine.machine && m.recipe === machine.recipe
-                ? { ...m, quantity: m.quantity + machine.quantity }
-                : m
+      (agg, recipe) =>
+        agg.some((r) => r.recipe === recipe.recipe)
+          ? agg.map((r) =>
+              r.recipe === recipe.recipe
+                ? { ...r, quantity: r.quantity + recipe.quantity }
+                : r
             )
-          : [...agg, machine],
-      [] as ReadonlyArray<CalculatorOutput["machines"][number]>
+          : [...agg, recipe],
+      [] as ReadonlyArray<CalculatorOutput["recipes"][number]>
     );
 
   return {
-    machines,
+    recipes,
     ...sumProduction(...outputs),
     electricityProduction: outputs.reduce(
       (sum, o) => sum + o.electricityProduction,
@@ -69,6 +77,7 @@ export function combineOutputs(
       (sum, o) => sum + o.computingProduction,
       0
     ),
+    workers: outputs.reduce((sum, o) => sum + o.workers, 0),
   };
 }
 

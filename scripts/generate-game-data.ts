@@ -1,4 +1,5 @@
-import { readFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
+import { format } from "prettier";
 import type {
   Category,
   GameData,
@@ -7,11 +8,22 @@ import type {
   Product,
   ProductQuantity,
   Recipe,
-} from "./types.js";
+} from "../src/game/types.js";
 
-const dir = "data/calculator/data";
+const data = await generateGameData();
 
-export async function loadGameData(): Promise<GameData> {
+const content = `
+import type { GameData } from "./types.js";
+
+export const gameData: GameData = ${JSON.stringify(data, null, 2)};
+`.trim();
+
+const filename = "src/game/data.ts";
+const formatted = await format(content, { filepath: filename });
+
+await writeFile(filename, formatted, "utf-8");
+
+async function generateGameData(): Promise<GameData> {
   const [categories, machines, products, recipes] = await Promise.all([
     loadCategories(),
     loadMachines(),
@@ -165,7 +177,9 @@ function toRecipe({
 }
 
 async function loadData<T>(filename: string): Promise<T> {
-  return JSON.parse(await readFile(`${dir}/${filename}.json`, "utf-8"));
+  return JSON.parse(
+    await readFile(`data/calculator/data/${filename}.json`, "utf-8")
+  );
 }
 
 type MaintenanceRawData = {

@@ -1,4 +1,4 @@
-import { loadGameData } from "./load.js";
+import { gameData } from "./data.js";
 import type {
   Category,
   Game,
@@ -9,8 +9,7 @@ import type {
 } from "./types.js";
 
 export async function loadGame(): Promise<Game> {
-  const data = await loadGameData();
-  return new GameImpl(data);
+  return new GameImpl(gameData);
 }
 
 class GameImpl implements Game {

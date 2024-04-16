@@ -1,0 +1,14 @@
+{
+  "name": "captain",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "@types/node": "^20.12.7",
+    "prettier": "^3.2.5",
+    "tsx": "^4.7.2",
+    "typescript": "^5.4.5"
+  },
+  "volta": {
+    "node": "21.7.3"
+  }
+}

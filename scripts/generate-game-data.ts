@@ -8,7 +8,7 @@ import type {
   Product,
   ProductQuantity,
   Recipe,
-} from "../src/game/types.js";
+} from "../src/game/index.js";
 
 const data = await generateGameData();
 

@@ -1,4 +1,5 @@
-import type { Game, Machine, Production, Recipe } from "./game/types.js";
+import { getMachine, getRecipe } from "./game.js";
+import type { Machine, Production, Recipe } from "./types.js";
 
 export type CalculatorInput = {
   recipes: ReadonlyArray<{ recipe: string; quantity: number }>;
@@ -17,14 +18,11 @@ export type CalculatorOutput = {
   workers: number;
 } & Production;
 
-export function calculate(
-  game: Game,
-  input: CalculatorInput
-): CalculatorOutput {
+export function calculate(input: CalculatorInput): CalculatorOutput {
   const recipes: ReadonlyArray<OutputRecipe> = input.recipes.map(
     (recipeInput) => {
-      const recipe = game.getRecipe(recipeInput.recipe);
-      const machine = game.getMachine(recipe.machine);
+      const recipe = getRecipe(recipeInput.recipe);
+      const machine = getMachine(recipe.machine);
       return { machine, recipe, quantity: recipeInput.quantity };
     }
   );

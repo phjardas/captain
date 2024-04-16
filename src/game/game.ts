@@ -1,43 +1,20 @@
 import { gameData } from "./data.js";
-import type {
-  Category,
-  Game,
-  GameData,
-  Machine,
-  Product,
-  Recipe,
-} from "./types.js";
+import type { Machine, Product, Recipe } from "./types.js";
 
-export async function loadGame(): Promise<Game> {
-  return new GameImpl(gameData);
+export function getRecipe(id: string): Recipe {
+  const recipe = gameData.recipes[id];
+  if (!recipe) throw new Error(`Recipe not found: ${id}`);
+  return recipe;
 }
 
-class GameImpl implements Game {
-  readonly categories: Record<string, Category>;
-  readonly machines: Record<string, Machine>;
-  readonly products: Record<string, Product>;
-  readonly recipes: Record<string, Recipe>;
+export function getMachine(id: string): Machine {
+  const machine = gameData.machines[id];
+  if (!machine) throw new Error(`Machine not found: ${id}`);
+  return machine;
+}
 
-  constructor(data: GameData) {
-    this.categories = data.categories;
-    this.machines = data.machines;
-    this.products = data.products;
-    this.recipes = data.recipes;
-  }
-
-  getCategory(id: string): Category {
-    return this.categories[id];
-  }
-
-  getMachine(id: string): Machine {
-    return this.machines[id];
-  }
-
-  getProduct(id: string): Product {
-    return this.products[id];
-  }
-
-  getRecipe(id: string): Recipe {
-    return this.recipes[id];
-  }
+export function getProduct(id: string): Product {
+  const product = gameData.products[id];
+  if (!product) throw new Error(`Product not found: ${id}`);
+  return product;
 }

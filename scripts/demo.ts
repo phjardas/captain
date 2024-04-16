@@ -1,12 +1,10 @@
 import {
   calculate,
   combineOutputs,
+  getProduct,
   type CalculatorInput,
   type CalculatorOutput,
-} from "../src/calculator.js";
-import { loadGame } from "../src/game/index.js";
-
-const game = await loadGame();
+} from "../src/game/index.js";
 
 const inputs: Array<{ name: string; input: CalculatorInput }> = [
   {
@@ -23,7 +21,7 @@ const inputs: Array<{ name: string; input: CalculatorInput }> = [
 ];
 
 const outputs = inputs.map(({ name, input }) => {
-  const output = calculate(game, input);
+  const output = calculate(input);
   print(name, output);
   return output;
 });
@@ -42,7 +40,7 @@ function print(title: string, output: CalculatorOutput) {
     console.log(
       "%s %s",
       quantity.toString().padStart(3),
-      game.getProduct(product).name
+      getProduct(product).name
     )
   );
 
@@ -52,7 +50,7 @@ function print(title: string, output: CalculatorOutput) {
     console.log(
       "%s %s",
       quantity.toString().padStart(3),
-      game.getProduct(product).name
+      getProduct(product).name
     )
   );
 

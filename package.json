@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "start": "vite",
-    "build": "tsc && vite build",
+    "build": "npm run generate && tsc && vite build",
     "generate": "tsx scripts/generate-game-data.ts"
   },
   "dependencies": {

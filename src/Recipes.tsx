@@ -2,15 +2,18 @@ import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
 import {
   Alert,
   Box,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
   IconButton,
   List,
   ListItem,
-  ListItemText,
   Typography,
 } from "@mui/material";
 import AddRecipeButton from "./AddRecipeButton.js";
 import { useProductionPlan, useProductionPlanDispatch } from "./context.js";
-import { getRecipe } from "./game/game.js";
+import { getMachine, getRecipe } from "./game/game.js";
 
 export default function Recipes() {
   const {
@@ -19,12 +22,12 @@ export default function Recipes() {
   const dispatch = useProductionPlanDispatch();
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column" }}>
-      <Typography variant="h6">Recipes</Typography>
+    <Card>
+      <CardHeader title="Recipes" />
       {recipes.length > 0 ? (
         <List>
-          {recipes.map((recipe, i) => (
-            <ListItem key={i} disableGutters>
+          {recipes.map(({ recipe, quantity }, i) => (
+            <ListItem key={i}>
               <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                   <IconButton
@@ -34,14 +37,14 @@ export default function Recipes() {
                       dispatch({
                         type: "set-recipe-quantity",
                         index: i,
-                        quantity: recipe.quantity - 1,
+                        quantity: quantity - 1,
                       })
                     }
-                    disabled={recipe.quantity < 1}
+                    disabled={quantity < 1}
                   >
                     <RemoveIcon />
                   </IconButton>
-                  <Typography component="span">{recipe.quantity}</Typography>
+                  <Typography component="span">{quantity}</Typography>
                   <IconButton
                     edge="end"
                     size="small"
@@ -49,25 +52,33 @@ export default function Recipes() {
                       dispatch({
                         type: "set-recipe-quantity",
                         index: i,
-                        quantity: recipe.quantity + 1,
+                        quantity: quantity + 1,
                       })
                     }
                   >
                     <AddIcon />
                   </IconButton>
+                  <img
+                    src={`/assets/machines/${getMachine(getRecipe(recipe).machine).icon}`}
+                    width={32}
+                    height={32}
+                  />
+                  <Typography component="span">
+                    {getRecipe(recipe).name}
+                  </Typography>
                 </Box>
-                <ListItemText
-                  primary={getRecipe(recipe.recipe).name}
-                  primaryTypographyProps={{ whiteSpace: "nowrap" }}
-                />
               </Box>
             </ListItem>
           ))}
         </List>
       ) : (
-        <Alert severity="info">Select a recipe to start.</Alert>
+        <CardContent>
+          <Alert severity="info">Select a recipe to start.</Alert>
+        </CardContent>
       )}
-      <AddRecipeButton />
-    </Box>
+      <CardActions>
+        <AddRecipeButton />
+      </CardActions>
+    </Card>
   );
 }

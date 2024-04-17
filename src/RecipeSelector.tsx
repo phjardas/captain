@@ -5,6 +5,7 @@ import {
   DialogContent,
   List,
   ListItemButton,
+  ListItemIcon,
   ListItemText,
   Stack,
   TextField,
@@ -57,6 +58,13 @@ export default function RecipeSelector({
                   onClose();
                 }}
               >
+                <ListItemIcon>
+                  <img
+                    src={`/assets/machines/${getMachine(recipe.machine).icon}`}
+                    width={32}
+                    height={32}
+                  />
+                </ListItemIcon>
                 <ListItemText
                   primary={recipe.name}
                   secondary={getMachine(recipe.machine).name}

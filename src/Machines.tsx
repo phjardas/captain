@@ -1,4 +1,11 @@
-import { Box, List, ListItem, ListItemText, Typography } from "@mui/material";
+import {
+  Card,
+  CardHeader,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import { OutputRecipe } from "./game/calculator.js";
 
 export default function Machines({
@@ -7,18 +14,24 @@ export default function Machines({
   recipes: ReadonlyArray<OutputRecipe>;
 }) {
   return (
-    <Box>
-      <Typography variant="h6">Machines</Typography>
+    <Card>
+      <CardHeader title="Machines" />
       <List>
         {recipes.map(({ recipe, machine, quantity }, i) => (
-          <ListItem key={i} disableGutters>
+          <ListItem key={i}>
+            <ListItemIcon>
+              <img
+                src={`/assets/machines/${machine.icon}`}
+                width={32}
+                height={32}
+              />
+            </ListItemIcon>
             <ListItemText
               primary={`${quantity}x ${machine.name}: ${recipe.name}`}
-              primaryTypographyProps={{ whiteSpace: "nowrap" }}
             />
           </ListItem>
         ))}
       </List>
-    </Box>
+    </Card>
   );
 }

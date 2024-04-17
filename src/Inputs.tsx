@@ -1,4 +1,11 @@
-import { Box, List, ListItem, ListItemText, Typography } from "@mui/material";
+import {
+  Card,
+  CardHeader,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
 import { getProduct } from "./game/game.js";
 import type { ProductQuantity } from "./game/types.js";
 
@@ -8,18 +15,24 @@ export default function Inputs({
   inputs: ReadonlyArray<ProductQuantity>;
 }) {
   return (
-    <Box>
-      <Typography variant="h6">Inputs</Typography>
+    <Card>
+      <CardHeader title="Inputs" />
       <List>
-        {inputs.map((product, i) => (
-          <ListItem key={i} disableGutters>
+        {inputs.map(({ product, quantity }, i) => (
+          <ListItem key={i}>
+            <ListItemIcon>
+              <img
+                src={`/assets/products/${getProduct(product).icon}`}
+                width={32}
+                height={32}
+              />
+            </ListItemIcon>
             <ListItemText
-              primary={`${product.quantity}x ${getProduct(product.product).name}`}
-              primaryTypographyProps={{ whiteSpace: "nowrap" }}
+              primary={`${quantity}x ${getProduct(product).name}`}
             />
           </ListItem>
         ))}
       </List>
-    </Box>
+    </Card>
   );
 }

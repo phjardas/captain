@@ -14,9 +14,9 @@ export default function Result() {
       {output && (
         <Box
           sx={{
-            display: "flex",
-            flexDirection: ["column", "column", "row"],
-            gap: 3,
+            display: "grid",
+            gridTemplateColumns: ["1fr", "1fr", "1fr 1fr", "1fr 1fr 1fr 1fr"],
+            gap: 1,
           }}
         >
           <Inputs inputs={output.inputs} />

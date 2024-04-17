@@ -5,17 +5,14 @@ import {
   createTheme,
   responsiveFontSizes,
 } from "@mui/material";
-import { indigo, pink } from "@mui/material/colors";
+import { deepOrange } from "@mui/material/colors/index.js";
 import { type ReactNode } from "react";
 
 const theme = responsiveFontSizes(
   createTheme({
     palette: {
-      primary: indigo,
-      secondary: pink,
-      background: {
-        default: "#f5f5f5",
-      },
+      mode: "dark",
+      primary: deepOrange,
     },
     components: {
       MuiButton: {
@@ -23,24 +20,6 @@ const theme = responsiveFontSizes(
           root: {
             textTransform: "none",
           },
-        },
-      },
-      MuiTab: {
-        styleOverrides: {
-          root: {
-            textTransform: "initial",
-            fontSize: "1rem",
-          },
-        },
-      },
-      MuiFormControl: {
-        defaultProps: {
-          fullWidth: true,
-        },
-      },
-      MuiTextField: {
-        defaultProps: {
-          fullWidth: true,
         },
       },
     },

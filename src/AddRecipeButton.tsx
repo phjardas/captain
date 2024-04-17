@@ -6,10 +6,8 @@ import {
 } from "material-ui-popup-state/hooks";
 import { useId } from "react";
 import RecipeSelector from "./RecipeSelector.js";
-import { useProductionPlanDispatch } from "./context.js";
 
 export default function AddRecipeButton() {
-  const dispatch = useProductionPlanDispatch();
   const popupState = usePopupState({ variant: "popover", popupId: useId() });
 
   return (
@@ -17,12 +15,7 @@ export default function AddRecipeButton() {
       <Button variant="contained" color="primary" {...bindTrigger(popupState)}>
         Add recipe
       </Button>
-      <RecipeSelector
-        {...bindPopover(popupState)}
-        onSelect={(recipe) =>
-          dispatch({ type: "add-recipe", recipe, quantity: 1 })
-        }
-      />
+      {popupState.isOpen && <RecipeSelector {...bindPopover(popupState)} />}
     </>
   );
 }

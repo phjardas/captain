@@ -35,14 +35,14 @@ export function convertGameData(data: Data): GameData {
         machine: item.name,
         inputs:
           recipe.input
-            ?.filter((input) => !input.flags)
+            ?.filter((input) => !input.flags && input.count && recipe.time)
             ?.map((input) => ({
               product: input.name,
               quantity: (input.count * 60) / recipe.time,
             })) ?? [],
         outputs:
           recipe.output
-            ?.filter((output) => !output.flags)
+            ?.filter((output) => !output.flags && output.count && recipe.time)
             ?.map((output) => ({
               product: output.name,
               quantity: (output.count * 60) / recipe.time,
@@ -129,12 +129,14 @@ function toMap<T extends Identifiable>(
 }
 
 function sumByName(recipe: RecipeData, name: string): number {
-  return [
-    ...(recipe.input
-      ?.filter((i) => i.name === name)
-      ?.map((i) => (-i.count * 60) / recipe.time) ?? []),
-    ...(recipe.output
-      ?.filter((i) => i.name === name)
-      ?.map((i) => (i.count * 60) / recipe.time) ?? []),
-  ].reduce((a, b) => a + b, 0);
+  return (
+    [
+      ...(recipe.input
+        ?.filter((i) => i.name === name && i.count && recipe.time)
+        ?.map((i) => (-i.count * 60) / recipe.time) ?? []),
+      ...(recipe.output
+        ?.filter((i) => i.name === name && i.count && recipe.time)
+        ?.map((i) => (i.count * 60) / recipe.time) ?? []),
+    ].reduce((a, b) => a + b, 0) ?? undefined
+  );
 }

@@ -1956,7 +1956,7 @@ export const gameData: GameData = {
         { product: "Electronics", quantity: 20 },
       ],
       recipes: ["PowerGeneratorT1"],
-      products: { input: ["MechPower"], output: ["Electricity"] },
+      products: { input: [], output: [] },
     },
     PowerGeneratorT2: {
       id: "PowerGeneratorT2",
@@ -1967,7 +1967,7 @@ export const gameData: GameData = {
         { product: "Electronics", quantity: 180 },
       ],
       recipes: ["PowerGeneratorT2"],
-      products: { input: ["MechPower"], output: ["Electricity"] },
+      products: { input: [], output: [] },
     },
     RainwaterHarvester: {
       id: "RainwaterHarvester",
@@ -2463,10 +2463,7 @@ export const gameData: GameData = {
       icon: "WasteSortingPlant",
       buildCosts: [{ product: "ConstructionParts3", quantity: 400 }],
       recipes: ["WasteSortingPlant", "WasteSortingPlant1"],
-      products: {
-        input: ["Recyclables", "RecyclablesPressed"],
-        output: ["BrokenGlass", "CopperScrap", "GoldScrap", "IronScrap"],
-      },
+      products: { input: ["Recyclables", "RecyclablesPressed"], output: [] },
     },
     WaterChiller: {
       id: "WaterChiller",
@@ -2787,11 +2784,11 @@ export const gameData: GameData = {
           "GlassSmeltingT2WithBroken",
           "GlassSmeltingArcWithBroken",
         ],
-        output: ["WasteSortingPlant", "WasteSortingPlant1"],
+        output: [],
       },
       machines: {
         input: ["SmeltingFurnaceT1", "SmeltingFurnaceT2", "ArcFurnace2"],
-        output: ["WasteSortingPlant"],
+        output: [],
       },
     },
     Cake: {
@@ -3304,11 +3301,7 @@ export const gameData: GameData = {
           "CopperSmeltingArcScrap",
           "PressingOfCopperScrap",
         ],
-        output: [
-          "ShreddingCopperScrap",
-          "WasteSortingPlant",
-          "WasteSortingPlant1",
-        ],
+        output: ["ShreddingCopperScrap"],
       },
       machines: {
         input: [
@@ -3317,7 +3310,7 @@ export const gameData: GameData = {
           "ArcFurnace2",
           "Compactor",
         ],
-        output: ["Shredder", "WasteSortingPlant"],
+        output: ["Shredder"],
       },
     },
     CopperScrapPressed: {
@@ -4159,16 +4152,9 @@ export const gameData: GameData = {
       icon: "GoldScrap",
       recipes: {
         input: ["PressingOfGoldScrap", "GoldScrapSmelting"],
-        output: [
-          "ShreddingGoldScrap",
-          "WasteSortingPlant",
-          "WasteSortingPlant1",
-        ],
+        output: ["ShreddingGoldScrap"],
       },
-      machines: {
-        input: ["Compactor", "GoldFurnace"],
-        output: ["Shredder", "WasteSortingPlant"],
-      },
+      machines: { input: ["Compactor", "GoldFurnace"], output: ["Shredder"] },
     },
     GoldScrapPressed: {
       id: "GoldScrapPressed",
@@ -4452,11 +4438,7 @@ export const gameData: GameData = {
           "IronSmeltingArcScrap",
           "PressingOfIronScrap",
         ],
-        output: [
-          "ShreddingIronScrap",
-          "WasteSortingPlant",
-          "WasteSortingPlant1",
-        ],
+        output: ["ShreddingIronScrap"],
       },
       machines: {
         input: [
@@ -4465,7 +4447,7 @@ export const gameData: GameData = {
           "ArcFurnace2",
           "Compactor",
         ],
-        output: ["Shredder", "WasteSortingPlant"],
+        output: ["Shredder"],
       },
     },
     IronScrapPressed: {
@@ -11507,9 +11489,9 @@ export const gameData: GameData = {
       name: "PowerGeneratorT1",
       duration: 0,
       machine: "PowerGeneratorT1",
-      inputs: [{ product: "MechPower", quantity: null }],
-      outputs: [{ product: "Electricity", quantity: null }],
-      electricityProduction: null,
+      inputs: [],
+      outputs: [],
+      electricityProduction: 0,
       computingProduction: 0,
     },
     PowerGeneratorT2: {
@@ -11517,9 +11499,9 @@ export const gameData: GameData = {
       name: "PowerGeneratorT2",
       duration: 0,
       machine: "PowerGeneratorT2",
-      inputs: [{ product: "MechPower", quantity: null }],
-      outputs: [{ product: "Electricity", quantity: null }],
-      electricityProduction: null,
+      inputs: [],
+      outputs: [],
+      electricityProduction: 0,
       computingProduction: 0,
     },
     PressingOfCopperScrap: {
@@ -13289,12 +13271,7 @@ export const gameData: GameData = {
       duration: 20,
       machine: "WasteSortingPlant",
       inputs: [{ product: "Recyclables", quantity: 144 }],
-      outputs: [
-        { product: "IronScrap", quantity: 0 },
-        { product: "CopperScrap", quantity: 0 },
-        { product: "GoldScrap", quantity: 0 },
-        { product: "BrokenGlass", quantity: 0 },
-      ],
+      outputs: [],
       electricityProduction: 0,
       computingProduction: 0,
     },
@@ -13304,12 +13281,7 @@ export const gameData: GameData = {
       duration: 20,
       machine: "WasteSortingPlant",
       inputs: [{ product: "RecyclablesPressed", quantity: 48 }],
-      outputs: [
-        { product: "IronScrap", quantity: 0 },
-        { product: "CopperScrap", quantity: 0 },
-        { product: "GoldScrap", quantity: 0 },
-        { product: "BrokenGlass", quantity: 0 },
-      ],
+      outputs: [],
       electricityProduction: 0,
       computingProduction: 0,
     },

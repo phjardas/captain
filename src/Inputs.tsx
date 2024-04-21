@@ -22,7 +22,7 @@ export default function Inputs({
           <ListItem key={i}>
             <ListItemIcon>
               <img
-                src={`/assets/products/${getProduct(product).icon}`}
+                src={`/assets/${getProduct(product).icon}.png`}
                 width={32}
                 height={32}
               />

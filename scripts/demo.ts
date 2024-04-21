@@ -1,10 +1,10 @@
 import {
   calculate,
   combineOutputs,
-  getProduct,
   type CalculatorInput,
   type CalculatorOutput,
-} from "../src/game/index.js";
+} from "../src/game/calculator.js";
+import { getProduct } from "../src/game/game.js";
 
 const inputs: Array<{ name: string; input: CalculatorInput }> = [
   {

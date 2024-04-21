@@ -17,18 +17,8 @@ export type Production = {
   readonly outputs: ReadonlyArray<ProductQuantity>;
 };
 
-export type Category = GameItem & {
-  readonly machines: ReadonlyArray<string>;
-  readonly recipes: ReadonlyArray<string>;
-};
-
 export type Machine = GameItem &
   WithIcon & {
-    readonly category: string;
-    readonly workers: number;
-    readonly maintenance?: Maintenance;
-    readonly electricityProduction: number;
-    readonly computingProduction: number;
     readonly buildCosts: ReadonlyArray<ProductQuantity>;
     readonly recipes: ReadonlyArray<string>;
     readonly products: InputOutput;
@@ -43,18 +33,14 @@ export type Product = GameItem &
 export type Recipe = GameItem & {
   readonly machine: string;
   readonly duration: number;
+  readonly workers?: number;
+  readonly electricityProduction?: number;
+  readonly computingProduction?: number;
+  readonly maintenance?: Maintenance;
 } & Production;
 
 export type GameData = {
-  readonly categories: Record<string, Category>;
   readonly machines: Record<string, Machine>;
   readonly products: Record<string, Product>;
   readonly recipes: Record<string, Recipe>;
-};
-
-export type Game = GameData & {
-  getCategory: (id: string) => Category;
-  getMachine: (id: string) => Machine;
-  getProduct: (id: string) => Product;
-  getRecipe: (id: string) => Recipe;
 };

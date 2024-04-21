@@ -59,7 +59,7 @@ export default function Recipes() {
                     <AddIcon />
                   </IconButton>
                   <img
-                    src={`/assets/machines/${getMachine(getRecipe(recipe).machine).icon}`}
+                    src={`/assets/${getMachine(getRecipe(recipe).machine).icon}.png`}
                     width={32}
                     height={32}
                   />

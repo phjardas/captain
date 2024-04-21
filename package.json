@@ -5,7 +5,7 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "generate": "tsx scripts/generate-game-data.ts"
+    "generate": "tsx scripts/convert"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",

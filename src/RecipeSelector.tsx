@@ -93,11 +93,7 @@ function ProductSelection({ select }: { select: (product: Product) => void }) {
             onClick={() => select(product)}
           >
             <ListItemIcon>
-              <img
-                src={`/assets/products/${product.icon}`}
-                width={32}
-                height={32}
-              />
+              <img src={`/assets/${product.icon}.png`} width={32} height={32} />
             </ListItemIcon>
             <ListItemText primary={product.name} />
           </ListItemButton>
@@ -151,7 +147,7 @@ function RecipeSelection({
           >
             <ListItemIcon>
               <img
-                src={`/assets/machines/${getMachine(recipe.machine).icon}`}
+                src={`/assets/${getMachine(recipe.machine).icon}.png`}
                 width={32}
                 height={32}
               />

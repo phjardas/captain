@@ -33,15 +33,15 @@ export function calculate(input: CalculatorInput): CalculatorOutput {
       ...recipes.map((m) => multiplyProduction(m.recipe, m.quantity))
     ),
     electricityProduction: recipes.reduce(
-      (sum, m) => sum + m.quantity * m.machine.electricityProduction,
+      (sum, m) => sum + m.quantity * (m.recipe.electricityProduction ?? 0),
       0
     ),
     computingProduction: recipes.reduce(
-      (sum, m) => sum + m.quantity * m.machine.computingProduction,
+      (sum, m) => sum + m.quantity * (m.recipe.computingProduction ?? 0),
       0
     ),
     workers: recipes.reduce(
-      (sum, m) => sum + m.quantity * m.machine.workers,
+      (sum, m) => sum + m.quantity * (m.recipe.workers ?? 0),
       0
     ),
   };

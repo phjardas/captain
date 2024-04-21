@@ -1,3 +1,12 @@
 /dist
 /node_modules
 *.log
+
+# downloaded
+/data.json
+/images.json
+/images.png
+
+# generated
+/src/game/data.ts
+/public/assets

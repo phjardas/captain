@@ -20,11 +20,7 @@ export default function Machines({
         {recipes.map(({ recipe, machine, quantity }, i) => (
           <ListItem key={i}>
             <ListItemIcon>
-              <img
-                src={`/assets/machines/${machine.icon}`}
-                width={32}
-                height={32}
-              />
+              <img src={`/assets/${machine.icon}.png`} width={32} height={32} />
             </ListItemIcon>
             <ListItemText
               primary={`${quantity}x ${machine.name}: ${recipe.name}`}

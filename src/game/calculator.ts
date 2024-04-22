@@ -1,5 +1,5 @@
 import { getMachine, getRecipe } from "./game.js";
-import type { Machine, Production, Recipe } from "./types.js";
+import type { Machine, ProductQuantity, Production, Recipe } from "./types.js";
 
 export type CalculatorInput = {
   recipes: ReadonlyArray<{ recipe: string; quantity: number }>;
@@ -14,6 +14,7 @@ export type OutputRecipe = {
 export type CalculatorOutput = {
   recipes: ReadonlyArray<OutputRecipe>;
   production: Production;
+  buildCosts: ReadonlyArray<ProductQuantity>;
 };
 
 export function calculate(input: CalculatorInput): CalculatorOutput {
@@ -29,6 +30,11 @@ export function calculate(input: CalculatorInput): CalculatorOutput {
     recipes,
     production: sumProduction(
       ...recipes.map((m) => multiplyProduction(m.recipe, m.quantity))
+    ),
+    buildCosts: sumQuantities(
+      ...recipes.flatMap((r) =>
+        multiplyQuantities(r.machine.buildCosts, r.quantity)
+      )
     ),
   };
 }
@@ -53,6 +59,7 @@ export function combineOutputs(
   return {
     recipes,
     production: sumProduction(...outputs.map((o) => o.production)),
+    buildCosts: sumQuantities(...outputs.flatMap((o) => o.buildCosts)),
   };
 }
 
@@ -104,4 +111,30 @@ function multiplyProduction(
       quantity: Math.abs(factor) * quantity,
     })),
   });
+}
+
+function multiplyQuantities(
+  products: ReadonlyArray<ProductQuantity>,
+  factor: number
+): ReadonlyArray<ProductQuantity> {
+  return products.map(({ product, quantity }) => ({
+    product,
+    quantity: factor * quantity,
+  }));
+}
+
+function sumQuantities(
+  ...products: ReadonlyArray<ProductQuantity>
+): ReadonlyArray<ProductQuantity> {
+  return Object.entries(
+    products.reduce(
+      (acc, { product, quantity }) => ({
+        ...acc,
+        [product]: (acc[product] ?? 0) + quantity,
+      }),
+      {} as Record<string, number>
+    )
+  )
+    .map(([product, quantity]) => ({ product, quantity }))
+    .toSorted((a, b) => b.quantity - a.quantity);
 }

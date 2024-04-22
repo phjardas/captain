@@ -1,4 +1,5 @@
 import { Alert, Box } from "@mui/material";
+import BuildCost from "./BuildCost.js";
 import Inputs from "./Inputs.js";
 import Outputs from "./Outputs.js";
 import { useProductionPlan } from "./context.js";
@@ -19,6 +20,7 @@ export default function Result() {
         >
           <Inputs inputs={output.production.inputs} />
           <Outputs outputs={output.production.outputs} />
+          <BuildCost output={output} />
         </Box>
       )}
     </>

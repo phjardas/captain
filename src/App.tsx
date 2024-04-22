@@ -1,4 +1,4 @@
-import { AppBar, Box, Container } from "@mui/material";
+import { AppBar, Box, Container, Toolbar } from "@mui/material";
 import MainMenu from "./MainMenu.js";
 import Recipes from "./Recipes.js";
 import Result from "./Result.js";
@@ -28,9 +28,10 @@ function Main() {
 
   return (
     <ProductionPlanContext plan={plan} dispatch={dispatch}>
-      <AppBar position="static">
+      <AppBar position="fixed">
         <MainMenu />
       </AppBar>
+      <Toolbar />
       <Container sx={{ py: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           <Recipes />

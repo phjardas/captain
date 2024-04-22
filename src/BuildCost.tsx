@@ -22,7 +22,11 @@ export default function BuildCost({ output }: { output: CalculatorOutput }) {
             </ListItemIcon>
             <ListItemText
               primary={
-                <ProductQuantity product={product} quantity={quantity} />
+                <ProductQuantity
+                  product={product}
+                  quantity={quantity}
+                  hideName
+                />
               }
             />
           </ListItem>

@@ -19,6 +19,7 @@ function useMuiTheme() {
           palette: {
             mode: darkMode ? "dark" : "light",
             primary,
+            secondary: primary,
             background: { default: darkMode ? "#000" : primary[50] },
           },
           shape: {

@@ -37,7 +37,11 @@ export default function Maintenance({ output }: { output: CalculatorOutput }) {
               </ListItemIcon>
               <ListItemText
                 primary={
-                  <ProductQuantity product={product} quantity={quantity} />
+                  <ProductQuantity
+                    product={product}
+                    quantity={quantity}
+                    hideName
+                  />
                 }
               />
             </ListItem>

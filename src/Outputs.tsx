@@ -27,7 +27,11 @@ export default function Outputs({
               </ListItemIcon>
               <ListItemText
                 primary={
-                  <ProductQuantity product={product} quantity={quantity} />
+                  <ProductQuantity
+                    product={product}
+                    quantity={quantity}
+                    hideName
+                  />
                 }
               />
             </ListItem>

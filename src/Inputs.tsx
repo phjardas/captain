@@ -37,7 +37,11 @@ export default function Inputs({ inputs }: { inputs: Record<string, number> }) {
               </ListItemIcon>
               <ListItemText
                 primary={
-                  <ProductQuantity product={product} quantity={quantity} />
+                  <ProductQuantity
+                    product={product}
+                    quantity={quantity}
+                    hideName
+                  />
                 }
               />
             </ListItem>

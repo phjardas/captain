@@ -60,6 +60,7 @@ function Products({
               component="span"
               sx={{ display: "inline-flex", alignItems: "baseline", gap: 0.5 }}
             >
+              <ProductIcon product={product} size={16} />
               <Typography component="span">
                 <ProductQuantity
                   product={product}
@@ -67,7 +68,6 @@ function Products({
                   hideName
                 />
               </Typography>
-              <ProductIcon product={product} size={16} />
             </Box>
           </Fragment>
         ))}

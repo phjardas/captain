@@ -44,7 +44,9 @@ function Products({
             product.type == "molten" ||
             product.type == "pollution" ||
             product.type == "mech" ||
-            (type === "output" && product.type === "electricity")
+            (type === "output" &&
+              (product.type === "electricity" ||
+                product.type === "maintenance"))
           );
         })
         .map(({ product, quantity }, index) => (

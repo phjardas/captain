@@ -22,9 +22,11 @@ import MachineIcon from "./MachineIcon.js";
 import MiniRecipe from "./MiniRecipe.js";
 import SaveRecipeButton from "./SaveRecipeButton.js";
 import { useProductionPlan, useProductionPlanDispatch } from "./context.js";
+import { useGame } from "./game/context.js";
 import { getMachine, getRecipe } from "./game/game.js";
 
 export default function Recipes() {
+  const game = useGame();
   const {
     input: { recipes },
   } = useProductionPlan();
@@ -67,10 +69,12 @@ export default function Recipes() {
                   >
                     <AddIcon />
                   </IconButton>
-                  <MachineIcon machineId={getRecipe(recipe).machine} />
+                  <MachineIcon machine={getRecipe(game, recipe).machine} />
                   <ListItemText
-                    primary={getMachine(getRecipe(recipe).machine).name}
-                    secondary={<MiniRecipe recipe={getRecipe(recipe)} />}
+                    primary={
+                      getMachine(game, getRecipe(game, recipe).machine).name
+                    }
+                    secondary={<MiniRecipe recipe={getRecipe(game, recipe)} />}
                   />
                 </Box>
               </Box>

@@ -13,7 +13,7 @@ export type Context = {
 
 const Context = createContext<Context | undefined>(undefined);
 
-export function ProductionPlanContext({
+export default function ProductionPlanContext({
   plan,
   dispatch,
   children,

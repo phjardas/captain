@@ -49,7 +49,7 @@ function useMuiTheme() {
   );
 }
 
-export function ThemeProvider({ children }: { children: ReactNode }) {
+export default function ThemeProvider({ children }: { children: ReactNode }) {
   const theme = useMuiTheme();
 
   return (

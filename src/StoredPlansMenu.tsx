@@ -14,19 +14,22 @@ import {
 import { useId } from "react";
 import MiniRecipe from "./MiniRecipe.js";
 import { useProductionPlanDispatch } from "./context.js";
-import type { Storage } from "./storage/types.js";
-import { useStorage } from "./storage/useStorage.js";
+import { useDeleteProductionPlan, useStorage } from "./storage/context.js";
+import type { StoredPlan } from "./storage/types.js";
 
 export default function StoredPlansMenu() {
   const storage = useStorage();
 
-  return storage.plans.length ? (
-    <StoredPlansMenuImpl storage={storage} />
+  return storage.state === "ready" &&
+    storage.data &&
+    storage.data.plans.length ? (
+    <StoredPlansMenuImpl plans={storage.data.plans} />
   ) : null;
 }
 
-function StoredPlansMenuImpl({ storage }: { storage: Storage }) {
+function StoredPlansMenuImpl({ plans }: { plans: ReadonlyArray<StoredPlan> }) {
   const dispatch = useProductionPlanDispatch();
+  const deleteProductionPlan = useDeleteProductionPlan();
   const popupState = usePopupState({ variant: "popover", popupId: useId() });
 
   return (
@@ -39,7 +42,7 @@ function StoredPlansMenuImpl({ storage }: { storage: Storage }) {
         Plans
       </Button>
       <Menu {...bindMenu(popupState)}>
-        {storage.plans
+        {plans
           .toSorted((a, b) => b.updatedAt - a.updatedAt)
           .map((plan) => (
             <MenuItem
@@ -59,7 +62,7 @@ function StoredPlansMenuImpl({ storage }: { storage: Storage }) {
                 sx={{ ml: 2 }}
                 onClick={(e) => {
                   e.stopPropagation();
-                  storage.deletePlan(plan.id);
+                  deleteProductionPlan(plan.id);
                 }}
               >
                 <Delete />

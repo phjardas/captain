@@ -1,5 +1,5 @@
 import { getMachine, getRecipe } from "./game.js";
-import type { Machine, ProductQuantity, Production, Recipe } from "./types.js";
+import type { GameData, Machine, Production, Recipe } from "./types.js";
 
 export type CalculatorInput = {
   recipes: ReadonlyArray<{ recipe: string; quantity: number }>;
@@ -14,14 +14,17 @@ export type OutputRecipe = {
 export type CalculatorOutput = {
   recipes: ReadonlyArray<OutputRecipe>;
   production: Production;
-  buildCosts: ReadonlyArray<ProductQuantity>;
+  buildCosts: Record<string, number>;
 };
 
-export function calculate(input: CalculatorInput): CalculatorOutput {
+export function calculate(
+  game: GameData,
+  input: CalculatorInput
+): CalculatorOutput {
   const recipes: ReadonlyArray<OutputRecipe> = input.recipes.map(
     (recipeInput) => {
-      const recipe = getRecipe(recipeInput.recipe);
-      const machine = getMachine(recipe.machine);
+      const recipe = getRecipe(game, recipeInput.recipe);
+      const machine = getMachine(game, recipe.machine);
       return { machine, recipe, quantity: recipeInput.quantity };
     }
   );
@@ -32,7 +35,7 @@ export function calculate(input: CalculatorInput): CalculatorOutput {
       ...recipes.map((m) => multiplyProduction(m.recipe, m.quantity))
     ),
     buildCosts: sumQuantities(
-      ...recipes.flatMap((r) =>
+      ...recipes.map((r) =>
         multiplyQuantities(r.machine.buildCosts, r.quantity)
       )
     ),
@@ -59,41 +62,36 @@ export function combineOutputs(
   return {
     recipes,
     production: sumProduction(...outputs.map((o) => o.production)),
-    buildCosts: sumQuantities(...outputs.flatMap((o) => o.buildCosts)),
+    buildCosts: sumQuantities(...outputs.map((o) => o.buildCosts)),
   };
 }
 
 function sumProduction(...productions: ReadonlyArray<Production>): Production {
   const quantities = productions.reduce(
     (acc, { inputs, outputs }) => {
-      inputs.forEach(
-        ({ product, quantity }) =>
-          (acc[product] = (acc[product] ?? 0) - quantity)
+      Object.entries(inputs).forEach(
+        ([product, quantity]) => (acc[product] = (acc[product] ?? 0) - quantity)
       );
-      outputs.forEach(
-        ({ product, quantity }) =>
-          (acc[product] = (acc[product] ?? 0) + quantity)
+      Object.entries(outputs).forEach(
+        ([product, quantity]) => (acc[product] = (acc[product] ?? 0) + quantity)
       );
       return acc;
     },
     {} as Record<string, number>
   );
 
-  const products = Object.entries(quantities)
-    .filter(([_, quantity]) => quantity !== 0)
-    .map(([product, quantity]) => ({
-      product,
-      quantity,
-    }));
-
+  const products = Object.entries(quantities).filter(
+    ([_, quantity]) => quantity !== 0
+  );
   return {
-    inputs: products
-      .filter((p) => p.quantity < 0)
-      .map(({ product, quantity }) => ({ product, quantity: -quantity }))
-      .sort((a, b) => b.quantity - a.quantity),
-    outputs: products
-      .filter((p) => p.quantity > 0)
-      .sort((a, b) => b.quantity - a.quantity),
+    inputs: Object.fromEntries(
+      products
+        .filter(([, quantity]) => quantity < 0)
+        .map(([product, quantity]) => [product, -quantity])
+    ),
+    outputs: Object.fromEntries(
+      products.filter(([, quantity]) => quantity > 0)
+    ),
   };
 }
 
@@ -102,39 +100,41 @@ function multiplyProduction(
   factor: number
 ): Production {
   return sumProduction({
-    inputs: (factor >= 0 ? inputs : outputs).map(({ product, quantity }) => ({
-      product,
-      quantity: Math.abs(factor) * quantity,
-    })),
-    outputs: (factor >= 0 ? outputs : inputs).map(({ product, quantity }) => ({
-      product,
-      quantity: Math.abs(factor) * quantity,
-    })),
+    inputs: Object.fromEntries(
+      Object.entries(factor >= 0 ? inputs : outputs).map(
+        ([product, quantity]) => [product, Math.abs(factor) * quantity]
+      )
+    ),
+    outputs: Object.fromEntries(
+      Object.entries(factor >= 0 ? outputs : inputs).map(
+        ([product, quantity]) => [product, Math.abs(factor) * quantity]
+      )
+    ),
   });
 }
 
 function multiplyQuantities(
-  products: ReadonlyArray<ProductQuantity>,
+  products: Record<string, number>,
   factor: number
-): ReadonlyArray<ProductQuantity> {
-  return products.map(({ product, quantity }) => ({
-    product,
-    quantity: factor * quantity,
-  }));
+): Record<string, number> {
+  return Object.fromEntries(
+    Object.entries(products).map(([product, quantity]) => [
+      product,
+      factor * quantity,
+    ])
+  );
 }
 
 function sumQuantities(
-  ...products: ReadonlyArray<ProductQuantity>
-): ReadonlyArray<ProductQuantity> {
-  return Object.entries(
-    products.reduce(
-      (acc, { product, quantity }) => ({
+  ...products: ReadonlyArray<Record<string, number>>
+): Record<string, number> {
+  return products
+    .flatMap((p) => Object.entries(p))
+    .reduce(
+      (acc, [product, quantity]) => ({
         ...acc,
         [product]: (acc[product] ?? 0) + quantity,
       }),
       {} as Record<string, number>
-    )
-  )
-    .map(([product, quantity]) => ({ product, quantity }))
-    .toSorted((a, b) => b.quantity - a.quantity);
+    );
 }

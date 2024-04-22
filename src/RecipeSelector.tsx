@@ -17,7 +17,7 @@ import MiniRecipe from "./MiniRecipe.js";
 import ProductIcon from "./ProductIcon.js";
 import { useProductionPlanDispatch } from "./context.js";
 import Dialog from "./dialog/index.js";
-import { gameData } from "./game/data.js";
+import { useGame } from "./game/context.js";
 import { getMachine } from "./game/game.js";
 import type { Product, Recipe } from "./game/types.js";
 
@@ -76,17 +76,18 @@ export default function RecipeSelector({
 function ProductSelection({ select }: { select: (product: Product) => void }) {
   const [search, setSearch] = useState("");
 
+  const game = useGame();
   const products = useMemo(() => {
     const s = search.toLocaleLowerCase();
 
-    return Object.values(gameData.products)
+    return Object.values(game.products)
       .filter(
         (product) =>
           product.name.toLocaleLowerCase().includes(s) ||
           product.id.toLocaleLowerCase().includes(s)
       )
       .toSorted((a, b) => a.name.localeCompare(b.name));
-  }, [search]);
+  }, [game.products, search]);
 
   return (
     <Stack sx={{ pt: 1, gap: 2 }}>
@@ -126,11 +127,12 @@ function RecipeSelection({
   product: Product;
   select: (recipe: Recipe) => void;
 }) {
+  const game = useGame();
   const recipes = useMemo(() => {
-    return Object.values(gameData.recipes)
-      .filter((recipe) => recipe.outputs.some((o) => o.product === product.id))
+    return Object.values(game.recipes)
+      .filter((recipe) => product.id in recipe.outputs)
       .toSorted((a, b) => a.id.localeCompare(b.id));
-  }, []);
+  }, [game.recipes, product.id]);
 
   return (
     <Stack sx={{ pt: 1, gap: 2 }}>
@@ -142,11 +144,11 @@ function RecipeSelection({
             onClick={() => select(recipe)}
           >
             <ListItemIcon>
-              <MachineIcon machineId={recipe.machine} />
+              <MachineIcon machine={recipe.machine} />
             </ListItemIcon>
             <ListItemText
               primary={<MiniRecipe recipe={recipe} />}
-              secondary={getMachine(recipe.machine).name}
+              secondary={getMachine(game, recipe.machine).name}
             />
           </ListItemButton>
         ))}

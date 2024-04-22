@@ -6,8 +6,9 @@ import { Box, Typography } from "@mui/material";
 import { Fragment } from "react/jsx-runtime";
 import ProductIcon from "./ProductIcon.js";
 import ProductQuantity from "./ProductQuantity.js";
+import { useGame } from "./game/context.js";
 import { getProduct } from "./game/game.js";
-import type { Production, ProductQuantity as Quantity } from "./game/types.js";
+import type { Production } from "./game/types.js";
 
 export default function MiniRecipe({ recipe }: { recipe: Production }) {
   return (
@@ -26,17 +27,19 @@ function Products({
   products,
   type,
 }: {
-  products: ReadonlyArray<Quantity>;
+  products: Record<string, number>;
   type: "input" | "output";
 }) {
+  const game = useGame();
+
   return (
     <Box
       component="span"
       sx={{ display: "inline-flex", alignItems: "baseline", gap: 0.5 }}
     >
-      {products
-        .filter(({ product: productId }) => {
-          const product = getProduct(productId);
+      {Object.entries(products)
+        .filter(([productId]) => {
+          const product = getProduct(game, productId);
           return (
             product.type === "countable" ||
             product.type === "fluid" ||
@@ -49,7 +52,7 @@ function Products({
                 product.type === "maintenance"))
           );
         })
-        .map(({ product, quantity }, index) => (
+        .map(([product, quantity], index) => (
           <Fragment key={product}>
             {index > 0 && <AddIcon fontSize="inherit" />}
             <Box
@@ -63,7 +66,7 @@ function Products({
                   hideName
                 />
               </Typography>
-              <ProductIcon productId={product} size={16} />
+              <ProductIcon product={product} size={16} />
             </Box>
           </Fragment>
         ))}

@@ -1,12 +1,18 @@
+import { useGame } from "./game/context.js";
 import { getProduct } from "./game/game.js";
-import type { Product, ProductQuantity as Quantity } from "./game/types.js";
+import type { Product } from "./game/types.js";
 
 export default function ProductQuantity({
   product: productId,
   quantity,
   hideName,
-}: Quantity & { hideName?: boolean }) {
-  const product = getProduct(productId);
+}: {
+  product: string;
+  quantity: number;
+  hideName?: boolean;
+}) {
+  const game = useGame();
+  const product = getProduct(game, productId);
 
   return (
     <>

@@ -1,6 +1,8 @@
-import { type Reducer } from "react";
-import { CalculatorInput, calculate } from "../game/calculator.js";
+import { useCallback, type Reducer } from "react";
+import { calculate, type CalculatorInput } from "../game/calculator.js";
+import { useGame } from "../game/context.js";
 import { getRecipe } from "../game/game.js";
+import type { GameData } from "../game/types.js";
 import type {
   AddRecipeAction,
   ProductionPlan,
@@ -10,34 +12,46 @@ import type {
 } from "./types.js";
 import { createInitialState } from "./utils.js";
 
-export const reducer: Reducer<ProductionPlan, ProductionPlanAction> = (
-  state,
-  action
-) => {
-  switch (action.type) {
-    case "add-recipe":
-      return applyInput(addRecipe)(state, action);
-    case "set-recipe-quantity":
-      return applyInput(setRecipeQuantity)(state, action);
-    case "reset-plan":
-      return apply(resetPlan)(state, action);
-    case "replace-plan":
-      return apply(replacePlan)(state, action);
-    default:
-      throw new Error(`Invalid action: ${(action as any).type}`);
-  }
-};
+export function useProductionPlanReducer(): Reducer<
+  ProductionPlan,
+  ProductionPlanAction
+> {
+  const game = useGame();
+
+  return useCallback(
+    (state, action) => {
+      switch (action.type) {
+        case "add-recipe":
+          return applyInput(game, addRecipe)(state, action);
+        case "set-recipe-quantity":
+          return applyInput(game, setRecipeQuantity)(state, action);
+        case "reset-plan":
+          return apply(game, resetPlan)(state, action);
+        case "replace-plan":
+          return apply(game, replacePlan)(state, action);
+        default:
+          throw new Error(`Invalid action: ${(action as any).type}`);
+      }
+    },
+    [game]
+  );
+}
 
 function apply<TAction extends ProductionPlanAction>(
-  applyer: (plan: ProductionPlan, action: TAction) => ProductionPlan
+  game: GameData,
+  applyer: (
+    game: GameData,
+    plan: ProductionPlan,
+    action: TAction
+  ) => ProductionPlan
 ): Reducer<ProductionPlan, ProductionPlanAction> {
   return (state, action) => {
     try {
-      const plan = applyer(state, action as TAction);
+      const plan = applyer(game, state, action as TAction);
 
       try {
         const output = plan.input.recipes.length
-          ? calculate(plan.input)
+          ? calculate(game, plan.input)
           : undefined;
         return { ...plan, output, error: undefined };
       } catch (error: any) {
@@ -50,19 +64,25 @@ function apply<TAction extends ProductionPlanAction>(
 }
 
 function applyInput<TAction extends ProductionPlanAction>(
-  applyer: (input: CalculatorInput, action: TAction) => CalculatorInput
+  game: GameData,
+  applyer: (
+    game: GameData,
+    input: CalculatorInput,
+    action: TAction
+  ) => CalculatorInput
 ): Reducer<ProductionPlan, ProductionPlanAction> {
-  return apply((state, action) => {
-    const input = applyer(state.input, action as TAction);
+  return apply(game, (game, state, action) => {
+    const input = applyer(game, state.input, action as TAction);
     return { ...state, input };
   });
 }
 
 function addRecipe(
+  game: GameData,
   input: CalculatorInput,
   action: AddRecipeAction
 ): CalculatorInput {
-  getRecipe(action.recipe);
+  getRecipe(game, action.recipe);
 
   return {
     ...input,
@@ -74,6 +94,7 @@ function addRecipe(
 }
 
 function setRecipeQuantity(
+  game: GameData,
   input: CalculatorInput,
   action: SetRecipeQuantityAction
 ): CalculatorInput {
@@ -95,7 +116,8 @@ function resetPlan(): ProductionPlan {
 }
 
 function replacePlan(
-  _: ProductionPlan,
+  _: GameData,
+  __: ProductionPlan,
   action: ReplacePlanAction
 ): ProductionPlan {
   return { id: action.id, input: action.input };

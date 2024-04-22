@@ -15,10 +15,10 @@ export default function BuildCost({ output }: { output: CalculatorOutput }) {
     <Card>
       <CardHeader title="Build cost" />
       <List>
-        {output.buildCosts.map(({ product, quantity }) => (
+        {Object.entries(output.buildCosts).map(([product, quantity]) => (
           <ListItem key={product}>
             <ListItemIcon>
-              <ProductIcon productId={product} />
+              <ProductIcon product={product} />
             </ListItemIcon>
             <ListItemText
               primary={

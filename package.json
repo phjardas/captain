@@ -5,8 +5,7 @@
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
-    "convert-data": "tsx scripts/convert data",
-    "convert-images": "tsx scripts/convert images"
+    "convert": "tsx scripts/convert"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -14,6 +13,7 @@
     "@fontsource/roboto": "^5.0.12",
     "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.10",
+    "firebase": "^10.11.0",
     "material-ui-popup-state": "^5.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
@@ -23,6 +23,7 @@
     "@types/react": "^18.0.27",
     "@types/react-dom": "^18.0.10",
     "@vitejs/plugin-react-swc": "^3.0.0",
+    "firebase-admin": "^12.1.0",
     "prettier": "^3.2.5",
     "tsx": "^4.7.2",
     "typescript": "^5.4.5",

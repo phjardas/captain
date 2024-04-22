@@ -3,7 +3,6 @@ export type Named = { readonly name: string };
 export type WithIcon = { readonly icon: string };
 
 export type Quantity = { readonly quantity: number };
-export type ProductQuantity = { readonly product: string } & Quantity;
 
 export type InputOutput = {
   readonly input: ReadonlyArray<string>;
@@ -11,14 +10,14 @@ export type InputOutput = {
 };
 
 export type Production = {
-  readonly inputs: ReadonlyArray<ProductQuantity>;
-  readonly outputs: ReadonlyArray<ProductQuantity>;
+  readonly inputs: Record<string, number>;
+  readonly outputs: Record<string, number>;
 };
 
 export type Machine = Identifiable &
   Named &
   WithIcon & {
-    readonly buildCosts: ReadonlyArray<ProductQuantity>;
+    readonly buildCosts: Record<string, number>;
   };
 
 export type ProductType =

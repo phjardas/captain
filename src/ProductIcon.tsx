@@ -1,20 +1,16 @@
+import { useGame } from "./game/context.js";
 import { getProduct } from "./game/game.js";
 import type { Product } from "./game/types.js";
 
-type ProductId = { product: Product } | { productId: string };
-
 export default function ProductIcon({
+  product,
   size = 32,
-  ...props
-}: ProductId & { size?: number }) {
-  const product =
-    "product" in props ? props.product : getProduct(props.productId);
-  return (
-    <img
-      src={`/assets/${product.icon}.png`}
-      width={size}
-      height={size}
-      title={product.name}
-    />
-  );
+}: {
+  product: string | Product;
+  size?: number;
+}) {
+  const game = useGame();
+  const { name, icon } = getProduct(game, product);
+
+  return <img src={icon} width={size} height={size} title={name} />;
 }

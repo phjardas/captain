@@ -1,20 +1,25 @@
-import { gameData } from "./data.js";
-import type { Machine, Product, Recipe } from "./types.js";
+import type {
+  GameData,
+  Identifiable,
+  Machine,
+  Product,
+  Recipe,
+} from "./types.js";
 
-export function getRecipe(id: string): Recipe {
-  const recipe = gameData.recipes[id];
-  if (!recipe) throw new Error(`Recipe not found: ${id}`);
-  return recipe;
+function getRequired<T extends Identifiable>(
+  key: "machines" | "recipes" | "products"
+): (game: GameData, id: string | T) => T {
+  return (game, id) => {
+    if (typeof id === "string") {
+      const value = game[key][id];
+      if (!value) throw new Error(`${key} not found: ${id}`);
+      return value as unknown as T;
+    }
+
+    return id as T;
+  };
 }
 
-export function getMachine(id: string): Machine {
-  const machine = gameData.machines[id];
-  if (!machine) throw new Error(`Machine not found: ${id}`);
-  return machine;
-}
-
-export function getProduct(id: string): Product {
-  const product = gameData.products[id];
-  if (!product) throw new Error(`Product not found: ${id}`);
-  return product;
-}
+export const getProduct = getRequired<Product>("products");
+export const getMachine = getRequired<Machine>("machines");
+export const getRecipe = getRequired<Recipe>("recipes");

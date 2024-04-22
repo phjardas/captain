@@ -1,60 +1,74 @@
 import { exec } from "child_process";
-import { mkdir, readFile, writeFile } from "node:fs/promises";
-import { format } from "prettier";
+import firebase from "firebase-admin";
+import { mkdir, readFile } from "node:fs/promises";
+import { resolve } from "path";
 import { convertGameData } from "./convert.js";
 import type { Data } from "./types.js";
 
-const commands = process.argv.slice(2);
-if (!commands.length) commands.push("data", "images");
+firebase.initializeApp({
+  credential: firebase.credential.cert(
+    JSON.parse(await readFile("firebase-service-account.json", "utf-8"))
+  ),
+});
 
-for (const command of commands) {
-  switch (command) {
-    case "data":
-      await processData();
-      break;
-    case "images":
-      await processImages();
-      break;
-    default:
-      throw new Error(`Invalid command: ${command}`);
-  }
-}
+const firestore = firebase.firestore();
 
-async function processData() {
-  const data = JSON.parse(await readFile("data.json", "utf-8")) as Data;
-  const gameData = convertGameData(data);
+const images = await processImages();
+const data = JSON.parse(await readFile("data.json", "utf-8")) as Data;
+const gameData = convertGameData(data, images);
 
-  const source = `import type { GameData } from "./types.js";\n\nexport const gameData: GameData = ${JSON.stringify(gameData)};\n`;
+const writer = firestore.bulkWriter();
 
-  const filename = "src/game/data.ts";
-  const content = await format(source, { filepath: filename });
-  await writeFile(filename, content, "utf-8");
-}
+Object.values(gameData.products).forEach(({ id, ...product }) =>
+  writer.set(firestore.collection("products").doc(id), product)
+);
 
-async function processImages() {
+Object.values(gameData.machines).forEach(({ id, ...machine }) =>
+  writer.set(firestore.collection("machines").doc(id), machine)
+);
+
+Object.values(gameData.recipes).forEach(({ id, ...recipe }) =>
+  writer.set(firestore.collection("recipes").doc(id), recipe)
+);
+
+await writer.close();
+
+async function processImages(): Promise<Record<string, string>> {
   const images = JSON.parse(await readFile("images.json", "utf-8")) as Record<
     string,
     [number, number]
   >;
 
-  await mkdir("public/assets", { recursive: true });
-  await Promise.all(
-    Object.entries(images).map(async ([name, [x, y]]) =>
-      extractImage(name, x, y)
+  const entries = await Promise.all(
+    Object.entries(images).map(
+      async ([name, [x, y]]) => [name, await extractImage(name, x, y)] as const
     )
   );
+
+  return Object.fromEntries(entries);
 }
 
-async function extractImage(name: string, x: number, y: number) {
+async function extractImage(
+  name: string,
+  x: number,
+  y: number
+): Promise<string> {
+  const filename = `tmp/${name}.png`;
+
+  await mkdir(resolve(filename, ".."), { recursive: true });
+
   const command = [
     "convert",
     "images.png",
     "-crop",
     `32x32+${x * 32}+${y * 32}`,
-    `public/assets/${name}.png`,
+    filename,
   ].join(" ");
 
   await new Promise<void>((resolve, reject) =>
     exec(command, (err) => (err ? reject(err) : resolve()))
   );
+
+  const buffer = await readFile(filename);
+  return `data:image/png;base64,${buffer.toString("base64")}`;
 }

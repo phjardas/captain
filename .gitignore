@@ -2,7 +2,8 @@
 /node_modules
 *.log
 
-# downloaded
+/firebase-service-account.json
 /data.json
 /images.json
 /images.png
+/tmp

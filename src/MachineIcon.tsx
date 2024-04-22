@@ -1,20 +1,16 @@
+import { useGame } from "./game/context.js";
 import { getMachine } from "./game/game.js";
 import type { Machine } from "./game/types.js";
 
-type MachineId = { machine: Machine } | { machineId: string };
-
 export default function MachineIcon({
+  machine,
   size = 32,
-  ...props
-}: MachineId & { size?: number }) {
-  const machine =
-    "machine" in props ? props.machine : getMachine(props.machineId);
-  return (
-    <img
-      src={`/assets/${machine.icon}.png`}
-      width={size}
-      height={size}
-      title={machine.name}
-    />
-  );
+}: {
+  machine: Machine | string;
+  size?: number;
+}) {
+  const game = useGame();
+  const { icon, name } = getMachine(game, machine);
+
+  return <img src={icon} width={size} height={size} title={name} />;
 }

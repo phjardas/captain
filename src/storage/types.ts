@@ -18,13 +18,6 @@ export type StoredPlanInput = {
   createdAt?: number;
 } & StoredPlanData;
 
-export type StorageData = {
+export type Storage = {
   plans: ReadonlyArray<StoredPlan>;
 };
-
-export type StorageMethods = {
-  savePlan(plan: StoredPlanInput): StoredPlan;
-  deletePlan(id: string): void;
-};
-
-export type Storage = StorageData & StorageMethods;

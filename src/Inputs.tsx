@@ -8,21 +8,19 @@ import {
 } from "@mui/material";
 import ProductIcon from "./ProductIcon.js";
 import ProductQuantity from "./ProductQuantity.js";
+import { useGame } from "./game/context.js";
 import { getProduct } from "./game/game.js";
-import type { ProductQuantity as Quantity } from "./game/types.js";
 
-export default function Inputs({
-  inputs,
-}: {
-  inputs: ReadonlyArray<Quantity>;
-}) {
+export default function Inputs({ inputs }: { inputs: Record<string, number> }) {
+  const game = useGame();
+
   return (
     <Card>
       <CardHeader title="Inputs" />
       <List>
-        {inputs
-          .filter((p) => {
-            const product = getProduct(p.product);
+        {Object.entries(inputs)
+          .filter(([p]) => {
+            const product = getProduct(game, p);
             return !(
               product.type === "computing" ||
               product.type === "electricity" ||
@@ -31,10 +29,10 @@ export default function Inputs({
               product.type === "unity"
             );
           })
-          .map(({ product, quantity }, i) => (
+          .map(([product, quantity], i) => (
             <ListItem key={i}>
               <ListItemIcon>
-                <ProductIcon productId={product} />
+                <ProductIcon product={product} />
               </ListItemIcon>
               <ListItemText
                 primary={

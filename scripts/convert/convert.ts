@@ -3,7 +3,6 @@ import type {
   Identifiable,
   Machine,
   Product,
-  ProductQuantity,
   ProductType,
   Recipe,
 } from "../../src/game/types.js";
@@ -26,14 +25,17 @@ import {
   type Recipe as RecipeData,
 } from "./types.js";
 
-export function convertGameData(data: Data): GameData {
+export function convertGameData(
+  data: Data,
+  images: Record<string, string>
+): GameData {
   const products: Record<string, Product> = toMap(
     data.items
       .filter((item) => !item.isAbstractClassItem && item.type !== undefined)
       .map((item) => ({
         id: item.name,
         name: item.label,
-        icon: item.image,
+        icon: images[item.image],
         type: getItemType(item),
       }))
   );
@@ -59,18 +61,20 @@ export function convertGameData(data: Data): GameData {
         id: recipe.name,
         duration: recipe.time,
         machine: item.name,
-        inputs:
+        inputs: Object.fromEntries(
           recipe.input
             ?.filter((input) => !input.name.startsWith("Any"))
             ?.map((input) =>
               perMinute(getProduct(input.name), input.count, recipe)
-            ) ?? [],
-        outputs:
+            ) ?? []
+        ),
+        outputs: Object.fromEntries(
           recipe.output
             ?.filter((output) => !output.name.startsWith("Any"))
             ?.map((output) =>
               perMinute(getProduct(output.name), output.count, recipe)
-            ) ?? [],
+            ) ?? []
+        ),
       }));
 
       recipes.push(...itemRecipes);
@@ -78,12 +82,10 @@ export function convertGameData(data: Data): GameData {
       return {
         id: item.name,
         name: item.label,
-        icon: item.image,
-        buildCosts:
-          item.cost?.map((cost) => ({
-            product: cost.name,
-            quantity: cost.count,
-          })) ?? [],
+        icon: images[item.image],
+        buildCosts: Object.fromEntries(
+          item.cost?.map((cost) => [cost.name, cost.count]) ?? []
+        ),
       };
     });
 
@@ -155,12 +157,12 @@ function perMinute(
   product: Product,
   count: number,
   { time }: RecipeData
-): ProductQuantity {
-  return {
-    product: product.id,
-    quantity:
-      !timedProductTypes.includes(product.type) || !time
-        ? count
-        : (count * 60) / time,
-  };
+): [string, number] {
+  return [
+    product.id,
+
+    !timedProductTypes.includes(product.type) || !time
+      ? count
+      : (count * 60) / time,
+  ];
 }

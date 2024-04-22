@@ -2,18 +2,24 @@ import { AppBar, Box, Container } from "@mui/material";
 import MainMenu from "./MainMenu.js";
 import Recipes from "./Recipes.js";
 import Result from "./Result.js";
-import { ProductionPlanContext } from "./context.js";
+import AuthenticationProvider from "./auth/provider.js";
+import ProductionPlanContext from "./context.js";
+import GameProvider from "./game/provider.js";
 import { useProductionPlan } from "./state/index.js";
-import { StorageProvider } from "./storage/provider.js";
-import { ThemeProvider } from "./theme.js";
+import StorageProvider from "./storage/provider.js";
+import ThemeProvider from "./theme.js";
 
 export default function App() {
   return (
-    <StorageProvider>
-      <ThemeProvider>
-        <Main />
-      </ThemeProvider>
-    </StorageProvider>
+    <ThemeProvider>
+      <AuthenticationProvider>
+        <GameProvider>
+          <StorageProvider>
+            <Main />
+          </StorageProvider>
+        </GameProvider>
+      </AuthenticationProvider>
+    </ThemeProvider>
   );
 }
 

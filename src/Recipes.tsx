@@ -9,9 +9,12 @@ import {
   IconButton,
   List,
   ListItem,
+  ListItemText,
   Typography,
 } from "@mui/material";
 import AddRecipeButton from "./AddRecipeButton.js";
+import MachineIcon from "./MachineIcon.js";
+import MiniRecipe from "./MiniRecipe.js";
 import { useProductionPlan, useProductionPlanDispatch } from "./context.js";
 import { getMachine, getRecipe } from "./game/game.js";
 
@@ -58,14 +61,11 @@ export default function Recipes() {
                   >
                     <AddIcon />
                   </IconButton>
-                  <img
-                    src={`/assets/${getMachine(getRecipe(recipe).machine).icon}.png`}
-                    width={32}
-                    height={32}
+                  <MachineIcon machineId={getRecipe(recipe).machine} />
+                  <ListItemText
+                    primary={getMachine(getRecipe(recipe).machine).name}
+                    secondary={<MiniRecipe recipe={getRecipe(recipe)} />}
                   />
-                  <Typography component="span">
-                    {getRecipe(recipe).name}
-                  </Typography>
                 </Box>
               </Box>
             </ListItem>

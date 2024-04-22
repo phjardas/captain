@@ -38,11 +38,7 @@ export function FullScreenDialog({
       fullScreen={true}
       TransitionComponent={SlideUp}
     >
-      <AppBar
-        position="static"
-        color="secondary"
-        sx={{ bgcolor: "secondary.main" }}
-      >
+      <AppBar position="static" color="primary">
         <Toolbar>
           <IconButton color="inherit" onClick={props.onClose} size="large">
             <CloseIcon />

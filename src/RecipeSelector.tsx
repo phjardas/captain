@@ -12,6 +12,9 @@ import {
   TextField,
 } from "@mui/material";
 import { useMemo, useState } from "react";
+import MachineIcon from "./MachineIcon.js";
+import MiniRecipe from "./MiniRecipe.js";
+import ProductIcon from "./ProductIcon.js";
 import { useProductionPlanDispatch } from "./context.js";
 import Dialog from "./dialog/index.js";
 import { gameData } from "./game/data.js";
@@ -29,7 +32,15 @@ export default function RecipeSelector({
   const dispatch = useProductionPlanDispatch();
 
   return (
-    <Dialog title="Select recipe" open={open} onClose={onClose}>
+    <Dialog
+      title={
+        product
+          ? `Select recipe to produce ${product.name}`
+          : "Select product to produce"
+      }
+      open={open}
+      onClose={onClose}
+    >
       <DialogContent>
         {product ? (
           <RecipeSelection
@@ -93,7 +104,7 @@ function ProductSelection({ select }: { select: (product: Product) => void }) {
             onClick={() => select(product)}
           >
             <ListItemIcon>
-              <img src={`/assets/${product.icon}.png`} width={32} height={32} />
+              <ProductIcon product={product} />
             </ListItemIcon>
             <ListItemText primary={product.name} />
           </ListItemButton>
@@ -146,14 +157,10 @@ function RecipeSelection({
             onClick={() => select(recipe)}
           >
             <ListItemIcon>
-              <img
-                src={`/assets/${getMachine(recipe.machine).icon}.png`}
-                width={32}
-                height={32}
-              />
+              <MachineIcon machineId={recipe.machine} />
             </ListItemIcon>
             <ListItemText
-              primary={recipe.name}
+              primary={<MiniRecipe recipe={recipe} />}
               secondary={getMachine(recipe.machine).name}
             />
           </ListItemButton>

@@ -65,14 +65,14 @@ export function convertGameData(
           recipe.input
             ?.filter((input) => !input.name.startsWith("Any"))
             ?.map((input) =>
-              perMinute(getProduct(input.name), input.count, recipe)
+              perMinute(getProduct(input.name), input.count, recipe, "input")
             ) ?? []
         ),
         outputs: Object.fromEntries(
           recipe.output
             ?.filter((output) => !output.name.startsWith("Any"))
             ?.map((output) =>
-              perMinute(getProduct(output.name), output.count, recipe)
+              perMinute(getProduct(output.name), output.count, recipe, "output")
             ) ?? []
         ),
       }));
@@ -156,13 +156,16 @@ const timedProductTypes: Array<ProductType> = [
 function perMinute(
   product: Product,
   count: number,
-  { time }: RecipeData
+  { time }: RecipeData,
+  direction: "input" | "output"
 ): [string, number] {
   return [
     product.id,
 
-    !timedProductTypes.includes(product.type) || !time
-      ? count
-      : (count * 60) / time,
+    (timedProductTypes.includes(product.type) ||
+      (direction == "output" && product.type === "maintenance")) &&
+    time
+      ? (count * 60) / time
+      : count,
   ];
 }

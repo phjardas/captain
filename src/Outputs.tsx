@@ -18,18 +18,20 @@ export default function Outputs({
     <Card>
       <CardHeader title="Outputs" />
       <List>
-        {Object.entries(outputs).map(([product, quantity], i) => (
-          <ListItem key={i}>
-            <ListItemIcon>
-              <ProductIcon product={product} />
-            </ListItemIcon>
-            <ListItemText
-              primary={
-                <ProductQuantity product={product} quantity={quantity} />
-              }
-            />
-          </ListItem>
-        ))}
+        {Object.entries(outputs)
+          .sort((a, b) => b[1] - a[1])
+          .map(([product, quantity], i) => (
+            <ListItem key={i}>
+              <ListItemIcon>
+                <ProductIcon product={product} />
+              </ListItemIcon>
+              <ListItemText
+                primary={
+                  <ProductQuantity product={product} quantity={quantity} />
+                }
+              />
+            </ListItem>
+          ))}
       </List>
     </Card>
   );

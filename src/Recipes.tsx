@@ -8,7 +8,6 @@ import {
   Box,
   Button,
   Card,
-  CardActions,
   CardContent,
   CardHeader,
   IconButton,
@@ -86,7 +85,14 @@ export default function Recipes() {
           <Alert severity="info">Select a recipe to start.</Alert>
         </CardContent>
       )}
-      <CardActions>
+      <Box
+        sx={{
+          display: "flex",
+          flexDirection: ["column", "row"],
+          gap: 1,
+          p: 1,
+        }}
+      >
         <AddRecipeButton />
         <SaveRecipeButton />
         {recipes.length > 0 && (
@@ -97,7 +103,7 @@ export default function Recipes() {
             Start over
           </Button>
         )}
-      </CardActions>
+      </Box>
     </Card>
   );
 }

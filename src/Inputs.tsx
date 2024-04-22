@@ -29,6 +29,7 @@ export default function Inputs({ inputs }: { inputs: Record<string, number> }) {
               product.type === "unity"
             );
           })
+          .sort((a, b) => b[1] - a[1])
           .map(([product, quantity], i) => (
             <ListItem key={i}>
               <ListItemIcon>

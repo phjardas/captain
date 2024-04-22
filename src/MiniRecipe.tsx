@@ -52,6 +52,7 @@ function Products({
                 product.type === "maintenance"))
           );
         })
+        .sort((a, b) => b[1] - a[1])
         .map(([product, quantity], index) => (
           <Fragment key={product}>
             {index > 0 && <AddIcon fontSize="inherit" />}

@@ -24,7 +24,7 @@ function Main() {
         </Toolbar>
       </AppBar>
       <Container sx={{ py: 2 }}>
-        <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+        <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>
           <Recipes />
           <Result />
         </Box>

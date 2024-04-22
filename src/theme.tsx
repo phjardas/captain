@@ -4,37 +4,58 @@ import {
   ThemeProvider as MuiThemeProvider,
   createTheme,
   responsiveFontSizes,
+  useMediaQuery,
 } from "@mui/material";
-import { deepOrange } from "@mui/material/colors/index.js";
-import { type ReactNode } from "react";
+import { grey, deepOrange as primary } from "@mui/material/colors/index.js";
+import { useMemo, type ReactNode } from "react";
 
-const theme = responsiveFontSizes(
-  createTheme({
-    palette: {
-      mode: "dark",
-      primary: deepOrange,
-    },
-    components: {
-      MuiButton: {
-        styleOverrides: {
-          root: {
-            textTransform: "none",
+function useMuiTheme() {
+  const darkMode = useMediaQuery("(prefers-color-scheme: dark)");
+
+  return useMemo(
+    () =>
+      responsiveFontSizes(
+        createTheme({
+          palette: {
+            mode: darkMode ? "dark" : "light",
+            primary,
+            background: { default: darkMode ? "#000" : grey[100] },
           },
-        },
-      },
-    },
-  })
-);
-
-function ThemeWrapper({ children }: { children?: ReactNode }) {
-  return <MuiThemeProvider theme={theme}>{children}</MuiThemeProvider>;
+          shape: {
+            borderRadius: 0,
+          },
+          components: {
+            MuiButton: {
+              styleOverrides: {
+                root: {
+                  textTransform: "none",
+                },
+                contained: {
+                  boxShadow: "none",
+                },
+              },
+            },
+            MuiCard: {
+              styleOverrides: {
+                root: {
+                  boxShadow: "none",
+                },
+              },
+            },
+          },
+        })
+      ),
+    [darkMode]
+  );
 }
 
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  const theme = useMuiTheme();
+
   return (
-    <ThemeWrapper>
+    <MuiThemeProvider theme={theme}>
       <CssBaseline />
       {children}
-    </ThemeWrapper>
+    </MuiThemeProvider>
   );
 }

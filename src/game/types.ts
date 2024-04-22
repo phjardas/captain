@@ -1,11 +1,9 @@
 export type Identifiable = { readonly id: string };
 export type Named = { readonly name: string };
 export type WithIcon = { readonly icon: string };
-export type GameItem = Identifiable & Named;
 
 export type Quantity = { readonly quantity: number };
 export type ProductQuantity = { readonly product: string } & Quantity;
-export type Maintenance = { readonly type: "1" | "2" | "3" } & Quantity;
 
 export type InputOutput = {
   readonly input: ReadonlyArray<string>;
@@ -17,26 +15,34 @@ export type Production = {
   readonly outputs: ReadonlyArray<ProductQuantity>;
 };
 
-export type Machine = GameItem &
+export type Machine = Identifiable &
+  Named &
   WithIcon & {
     readonly buildCosts: ReadonlyArray<ProductQuantity>;
-    readonly recipes: ReadonlyArray<string>;
-    readonly products: InputOutput;
   };
 
-export type Product = GameItem &
+export type ProductType =
+  | "fluid"
+  | "countable"
+  | "loose"
+  | "molten"
+  | "electricity"
+  | "mech"
+  | "computing"
+  | "maintenance"
+  | "pollution"
+  | "unity"
+  | "worker";
+
+export type Product = Identifiable &
+  Named &
   WithIcon & {
-    readonly recipes: InputOutput;
-    readonly machines: InputOutput;
+    readonly type: ProductType;
   };
 
-export type Recipe = GameItem & {
+export type Recipe = Identifiable & {
   readonly machine: string;
   readonly duration: number;
-  readonly workers?: number;
-  readonly electricityProduction?: number;
-  readonly computingProduction?: number;
-  readonly maintenance?: Maintenance;
 } & Production;
 
 export type GameData = {

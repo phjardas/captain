@@ -9,5 +9,12 @@ export default function MachineIcon({
 }: MachineId & { size?: number }) {
   const machine =
     "machine" in props ? props.machine : getMachine(props.machineId);
-  return <img src={`/assets/${machine.icon}.png`} width={size} height={size} />;
+  return (
+    <img
+      src={`/assets/${machine.icon}.png`}
+      width={size}
+      height={size}
+      title={machine.name}
+    />
+  );
 }

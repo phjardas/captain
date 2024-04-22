@@ -4,6 +4,22 @@ import { format } from "prettier";
 import { convertGameData } from "./convert.js";
 import type { Data } from "./types.js";
 
+const commands = process.argv.slice(2);
+if (!commands.length) commands.push("data", "images");
+
+for (const command of commands) {
+  switch (command) {
+    case "data":
+      await processData();
+      break;
+    case "images":
+      await processImages();
+      break;
+    default:
+      throw new Error(`Invalid command: ${command}`);
+  }
+}
+
 async function processData() {
   const data = JSON.parse(await readFile("data.json", "utf-8")) as Data;
   const gameData = convertGameData(data);
@@ -42,5 +58,3 @@ async function extractImage(name: string, x: number, y: number) {
     exec(command, (err) => (err ? reject(err) : resolve()))
   );
 }
-
-await Promise.all([processData(), processImages()]);

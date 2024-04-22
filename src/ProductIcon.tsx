@@ -9,5 +9,12 @@ export default function ProductIcon({
 }: ProductId & { size?: number }) {
   const product =
     "product" in props ? props.product : getProduct(props.productId);
-  return <img src={`/assets/${product.icon}.png`} width={size} height={size} />;
+  return (
+    <img
+      src={`/assets/${product.icon}.png`}
+      width={size}
+      height={size}
+      title={product.name}
+    />
+  );
 }

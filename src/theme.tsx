@@ -6,7 +6,7 @@ import {
   responsiveFontSizes,
   useMediaQuery,
 } from "@mui/material";
-import { grey, deepOrange as primary } from "@mui/material/colors/index.js";
+import { blueGrey as primary } from "@mui/material/colors/index.js";
 import { useMemo, type ReactNode } from "react";
 
 function useMuiTheme() {
@@ -19,7 +19,7 @@ function useMuiTheme() {
           palette: {
             mode: darkMode ? "dark" : "light",
             primary,
-            background: { default: darkMode ? "#000" : grey[100] },
+            background: { default: darkMode ? "#000" : primary[50] },
           },
           shape: {
             borderRadius: 0,

@@ -13,9 +13,6 @@ export type OutputRecipe = {
 
 export type CalculatorOutput = {
   recipes: ReadonlyArray<OutputRecipe>;
-  electricityProduction: number;
-  computingProduction: number;
-  workers: number;
 } & Production;
 
 export function calculate(input: CalculatorInput): CalculatorOutput {
@@ -31,18 +28,6 @@ export function calculate(input: CalculatorInput): CalculatorOutput {
     recipes,
     ...sumProduction(
       ...recipes.map((m) => multiplyProduction(m.recipe, m.quantity))
-    ),
-    electricityProduction: recipes.reduce(
-      (sum, m) => sum + m.quantity * (m.recipe.electricityProduction ?? 0),
-      0
-    ),
-    computingProduction: recipes.reduce(
-      (sum, m) => sum + m.quantity * (m.recipe.computingProduction ?? 0),
-      0
-    ),
-    workers: recipes.reduce(
-      (sum, m) => sum + m.quantity * (m.recipe.workers ?? 0),
-      0
     ),
   };
 }
@@ -67,15 +52,6 @@ export function combineOutputs(
   return {
     recipes,
     ...sumProduction(...outputs),
-    electricityProduction: outputs.reduce(
-      (sum, o) => sum + o.electricityProduction,
-      0
-    ),
-    computingProduction: outputs.reduce(
-      (sum, o) => sum + o.computingProduction,
-      0
-    ),
-    workers: outputs.reduce((sum, o) => sum + o.workers, 0),
   };
 }
 

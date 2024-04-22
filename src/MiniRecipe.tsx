@@ -5,7 +5,9 @@ import {
 import { Box, Typography } from "@mui/material";
 import { Fragment } from "react/jsx-runtime";
 import ProductIcon from "./ProductIcon.js";
-import type { Recipe } from "./game/types.js";
+import ProductQuantity from "./ProductQuantity.js";
+import { getProduct } from "./game/game.js";
+import type { ProductQuantity as Quantity, Recipe } from "./game/types.js";
 
 export default function MiniRecipe({ recipe }: { recipe: Recipe }) {
   return (
@@ -13,41 +15,55 @@ export default function MiniRecipe({ recipe }: { recipe: Recipe }) {
       component="span"
       sx={{ display: "inline-flex", alignItems: "baseline", gap: 1 }}
     >
-      <Box
-        component="span"
-        sx={{ display: "inline-flex", alignItems: "baseline", gap: 0.5 }}
-      >
-        {recipe.inputs.map((input, index) => (
-          <Fragment key={input.product}>
-            {index > 0 && <AddIcon fontSize="inherit" />}
-            <Box
-              component="span"
-              sx={{ display: "inline-flex", alignItems: "baseline", gap: 0.5 }}
-            >
-              <Typography component="span">{input.quantity}</Typography>
-              <ProductIcon productId={input.product} size={16} />
-            </Box>
-          </Fragment>
-        ))}
-      </Box>
+      <Products products={recipe.inputs} type="input" />
       <ArrowForwardIcon fontSize="inherit" />
-      <Box
-        component="span"
-        sx={{ display: "inline-flex", alignItems: "baseline", gap: 0.5 }}
-      >
-        {recipe.outputs.map((output, index) => (
-          <Fragment key={output.product}>
+      <Products products={recipe.outputs} type="output" />
+    </Box>
+  );
+}
+
+function Products({
+  products,
+  type,
+}: {
+  products: ReadonlyArray<Quantity>;
+  type: "input" | "output";
+}) {
+  return (
+    <Box
+      component="span"
+      sx={{ display: "inline-flex", alignItems: "baseline", gap: 0.5 }}
+    >
+      {products
+        .filter(({ product: productId }) => {
+          const product = getProduct(productId);
+          return (
+            product.type === "countable" ||
+            product.type === "fluid" ||
+            product.type === "loose" ||
+            product.type == "molten" ||
+            product.type == "pollution" ||
+            product.type == "mech"
+          );
+        })
+        .map(({ product, quantity }, index) => (
+          <Fragment key={product}>
             {index > 0 && <AddIcon fontSize="inherit" />}
             <Box
               component="span"
               sx={{ display: "inline-flex", alignItems: "baseline", gap: 0.5 }}
             >
-              <Typography component="span">{output.quantity}</Typography>
-              <ProductIcon productId={output.product} size={16} />
+              <Typography component="span">
+                <ProductQuantity
+                  product={product}
+                  quantity={quantity}
+                  hideName
+                />
+              </Typography>
+              <ProductIcon productId={product} size={16} />
             </Box>
           </Fragment>
         ))}
-      </Box>
     </Box>
   );
 }

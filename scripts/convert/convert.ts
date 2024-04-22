@@ -3,19 +3,47 @@ import type {
   Identifiable,
   Machine,
   Product,
+  ProductQuantity,
+  ProductType,
   Recipe,
 } from "../../src/game/types.js";
 import {
+  computingExType,
   countableItemType,
+  electricityExType,
   fluidItemType,
   looseItemType,
+  maintenanceExType,
+  mechPowerExType,
   moltenItemType,
+  pollutionExType,
+  unityExType,
+  virtualItemType,
+  workerExType,
   type Data,
-  type ItemType,
+  type ExType,
+  type Item,
   type Recipe as RecipeData,
 } from "./types.js";
 
 export function convertGameData(data: Data): GameData {
+  const products: Record<string, Product> = toMap(
+    data.items
+      .filter((item) => !item.isAbstractClassItem && item.type !== undefined)
+      .map((item) => ({
+        id: item.name,
+        name: item.label,
+        icon: item.image,
+        type: getItemType(item),
+      }))
+  );
+
+  const getProduct = (name: string): Product => {
+    const product = products[name];
+    if (!product) throw new Error(`Unknown product: ${name}`);
+    return product;
+  };
+
   const recipeDictionary = Object.fromEntries(
     data.recipeDictionaries.map((entry) => [entry.name, entry.recipes])
   );
@@ -29,27 +57,20 @@ export function convertGameData(data: Data): GameData {
         recipeDictionary[item.recipe!.recipeDictionary] ?? []
       ).map((recipe) => ({
         id: recipe.name,
-        // TODO
-        name: recipe.name,
         duration: recipe.time,
         machine: item.name,
         inputs:
           recipe.input
-            ?.filter((input) => !input.flags && input.count && recipe.time)
-            ?.map((input) => ({
-              product: input.name,
-              quantity: (input.count * 60) / recipe.time,
-            })) ?? [],
+            ?.filter((input) => !input.name.startsWith("Any"))
+            ?.map((input) =>
+              perMinute(getProduct(input.name), input.count, recipe)
+            ) ?? [],
         outputs:
           recipe.output
-            ?.filter((output) => !output.flags && output.count && recipe.time)
-            ?.map((output) => ({
-              product: output.name,
-              quantity: (output.count * 60) / recipe.time,
-            })) ?? [],
-        electricityProduction: sumByName(recipe, "Electricity"),
-        computingProduction: sumByName(recipe, "Computing"),
-        // workers: sumByName(recipe, "Worker"),
+            ?.filter((output) => !output.name.startsWith("Any"))
+            ?.map((output) =>
+              perMinute(getProduct(output.name), output.count, recipe)
+            ) ?? [],
       }));
 
       recipes.push(...itemRecipes);
@@ -63,61 +84,55 @@ export function convertGameData(data: Data): GameData {
             product: cost.name,
             quantity: cost.count,
           })) ?? [],
-        recipes: itemRecipes.map((r) => r.id),
-        products: {
-          input: itemRecipes
-            .flatMap((r) => r.inputs.map((i) => i.product))
-            .toSorted()
-            .filter((v, i, a) => a.indexOf(v) === i),
-          output: itemRecipes
-            .flatMap((r) => r.outputs.map((i) => i.product))
-            .toSorted()
-            .filter((v, i, a) => a.indexOf(v) === i),
-        },
       };
     });
 
-  const itemTypes: Array<ItemType> = [
-    fluidItemType,
-    countableItemType,
-    looseItemType,
-    moltenItemType,
-  ];
-
-  const products: Array<Product> = data.items
-    .filter(
-      (item) =>
-        !item.isAbstractClassItem &&
-        item.type !== undefined &&
-        itemTypes.includes(item.type)
-    )
-    .map((item) => ({
-      id: item.name,
-      name: item.label,
-      icon: item.image,
-      recipes: {
-        input: recipes
-          .filter((r) => r.inputs.some((i) => i.product === item.name))
-          .map((r) => r.id),
-        output: recipes
-          .filter((r) => r.outputs.some((o) => o.product === item.name))
-          .map((r) => r.id),
-      },
-      machines: {
-        input: machines
-          .filter((m) => m.products.input.includes(item.name))
-          .map((m) => m.id),
-        output: machines
-          .filter((m) => m.products.output.includes(item.name))
-          .map((m) => m.id),
-      },
-    }));
-
   return {
+    products,
     machines: toMap(machines),
-    products: toMap(products),
     recipes: toMap(recipes),
   };
+}
+
+function getItemType({ name, type, exdata }: Item): ProductType {
+  switch (type) {
+    case fluidItemType:
+      return "fluid";
+    case countableItemType:
+      return "countable";
+    case looseItemType:
+      return "loose";
+    case moltenItemType:
+      return "molten";
+    case virtualItemType:
+      if (name === "Research") return "countable";
+      if (!exdata?.exType)
+        throw new Error(`Virtual item without exdata: ${name}`);
+      return getVirtualItemType(exdata?.exType);
+    default:
+      throw new Error(`Unknown item type in product ${name}: ${type}`);
+  }
+}
+
+function getVirtualItemType(extype: ExType): ProductType {
+  switch (extype) {
+    case electricityExType:
+      return "electricity";
+    case mechPowerExType:
+      return "mech";
+    case computingExType:
+      return "computing";
+    case maintenanceExType:
+      return "maintenance";
+    case pollutionExType:
+      return "pollution";
+    case workerExType:
+      return "worker";
+    case unityExType:
+      return "unity";
+    default:
+      throw new Error(`Unknown ex type in virtual item: ${extype}`);
+  }
 }
 
 function toMap<T extends Identifiable>(
@@ -128,15 +143,24 @@ function toMap<T extends Identifiable>(
   );
 }
 
-function sumByName(recipe: RecipeData, name: string): number {
-  return (
-    [
-      ...(recipe.input
-        ?.filter((i) => i.name === name && i.count && recipe.time)
-        ?.map((i) => (-i.count * 60) / recipe.time) ?? []),
-      ...(recipe.output
-        ?.filter((i) => i.name === name && i.count && recipe.time)
-        ?.map((i) => (i.count * 60) / recipe.time) ?? []),
-    ].reduce((a, b) => a + b, 0) ?? undefined
-  );
+const timedProductTypes: Array<ProductType> = [
+  "fluid",
+  "countable",
+  "loose",
+  "molten",
+  "pollution",
+];
+
+function perMinute(
+  product: Product,
+  count: number,
+  { time }: RecipeData
+): ProductQuantity {
+  return {
+    product: product.id,
+    quantity:
+      !timedProductTypes.includes(product.type) || !time
+        ? count
+        : (count * 60) / time,
+  };
 }

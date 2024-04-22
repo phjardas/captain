@@ -126,31 +126,16 @@ function RecipeSelection({
   product: Product;
   select: (recipe: Recipe) => void;
 }) {
-  const [search, setSearch] = useState("");
-
   const recipes = useMemo(() => {
-    const s = search.toLocaleLowerCase();
-
     return Object.values(gameData.recipes)
-      .filter(
-        (recipe) =>
-          product.recipes.output.includes(recipe.id) &&
-          (recipe.name.toLocaleLowerCase().includes(s) ||
-            recipe.id.toLocaleLowerCase().includes(s))
-      )
-      .toSorted((a, b) => a.name.localeCompare(b.name));
-  }, [search]);
+      .filter((recipe) => recipe.outputs.some((o) => o.product === product.id))
+      .toSorted((a, b) => a.id.localeCompare(b.id));
+  }, []);
 
   return (
     <Stack sx={{ pt: 1, gap: 2 }}>
-      <TextField
-        type="search"
-        label="Search"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
       <List dense>
-        {recipes.slice(0, 10).map((recipe) => (
+        {recipes.map((recipe) => (
           <ListItemButton
             key={recipe.id}
             disableGutters
@@ -166,11 +151,6 @@ function RecipeSelection({
           </ListItemButton>
         ))}
       </List>
-      {recipes.length > 10 && (
-        <Alert severity="info">
-          and {recipes.length - 10} more results&hellip;
-        </Alert>
-      )}
     </Stack>
   );
 }

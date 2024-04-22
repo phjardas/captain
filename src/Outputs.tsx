@@ -6,13 +6,14 @@ import {
   ListItemIcon,
   ListItemText,
 } from "@mui/material";
-import { getProduct } from "./game/game.js";
-import type { ProductQuantity } from "./game/types.js";
+import ProductIcon from "./ProductIcon.js";
+import ProductQuantity from "./ProductQuantity.js";
+import type { ProductQuantity as Quantity } from "./game/types.js";
 
 export default function Outputs({
   outputs,
 }: {
-  outputs: ReadonlyArray<ProductQuantity>;
+  outputs: ReadonlyArray<Quantity>;
 }) {
   return (
     <Card>
@@ -21,14 +22,12 @@ export default function Outputs({
         {outputs.map(({ product, quantity }, i) => (
           <ListItem key={i}>
             <ListItemIcon>
-              <img
-                src={`/assets/${getProduct(product).icon}.png`}
-                width={32}
-                height={32}
-              />
+              <ProductIcon productId={product} />
             </ListItemIcon>
             <ListItemText
-              primary={`${quantity}x ${getProduct(product).name}`}
+              primary={
+                <ProductQuantity product={product} quantity={quantity} />
+              }
             />
           </ListItem>
         ))}

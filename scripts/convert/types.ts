@@ -12,8 +12,7 @@ export const looseItemType = 6;
 export const moltenItemType = 7;
 export const virtualItemType = 9;
 
-export type ExType = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
-export const unknownExType = 0;
+export type ExType = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 export const electricityExType = 1;
 export const mechPowerExType = 2;
 export const computingExType = 3;

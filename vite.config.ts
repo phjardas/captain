@@ -19,13 +19,13 @@ export default defineConfig({
       },
       manifest: {
         id: "/",
-        name: "Sex Diary",
-        short_name: "Sex Diary",
+        name: "Industry Planner",
+        short_name: "Industry Planner",
         lang: "en",
         start_url: ".",
         display: "standalone",
-        theme_color: "#9c27b0",
-        background_color: "#f5f5f5",
+        theme_color: "#607d8b",
+        background_color: "#eceff1",
         icons: [
           {
             src: "logo.svg",

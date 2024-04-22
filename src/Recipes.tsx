@@ -1,7 +1,12 @@
-import { Add as AddIcon, Remove as RemoveIcon } from "@mui/icons-material";
+import {
+  Add as AddIcon,
+  Clear,
+  Remove as RemoveIcon,
+} from "@mui/icons-material";
 import {
   Alert,
   Box,
+  Button,
   Card,
   CardActions,
   CardContent,
@@ -15,6 +20,7 @@ import {
 import AddRecipeButton from "./AddRecipeButton.js";
 import MachineIcon from "./MachineIcon.js";
 import MiniRecipe from "./MiniRecipe.js";
+import SaveRecipeButton from "./SaveRecipeButton.js";
 import { useProductionPlan, useProductionPlanDispatch } from "./context.js";
 import { getMachine, getRecipe } from "./game/game.js";
 
@@ -78,6 +84,15 @@ export default function Recipes() {
       )}
       <CardActions>
         <AddRecipeButton />
+        <SaveRecipeButton />
+        {recipes.length > 0 && (
+          <Button
+            startIcon={<Clear />}
+            onClick={() => dispatch({ type: "reset-plan" })}
+          >
+            Start over
+          </Button>
+        )}
       </CardActions>
     </Card>
   );

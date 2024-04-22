@@ -1,7 +1,6 @@
 import { Alert, Box } from "@mui/material";
 import Inputs from "./Inputs.js";
 import Outputs from "./Outputs.js";
-import Statistics from "./Statistics.js";
 import { useProductionPlan } from "./context.js";
 
 export default function Result() {
@@ -18,9 +17,8 @@ export default function Result() {
             gap: 1,
           }}
         >
-          <Inputs inputs={output.inputs} />
-          <Outputs outputs={output.outputs} />
-          <Statistics output={output} />
+          <Inputs inputs={output.production.inputs} />
+          <Outputs outputs={output.production.outputs} />
         </Box>
       )}
     </>

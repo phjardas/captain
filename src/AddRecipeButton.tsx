@@ -1,3 +1,4 @@
+import { Add } from "@mui/icons-material";
 import { Button } from "@mui/material";
 import {
   bindPopover,
@@ -12,7 +13,12 @@ export default function AddRecipeButton() {
 
   return (
     <>
-      <Button variant="contained" color="primary" {...bindTrigger(popupState)}>
+      <Button
+        variant="contained"
+        color="primary"
+        startIcon={<Add />}
+        {...bindTrigger(popupState)}
+      >
         Add recipe
       </Button>
       {popupState.isOpen && <RecipeSelector {...bindPopover(popupState)} />}

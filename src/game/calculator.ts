@@ -13,7 +13,8 @@ export type OutputRecipe = {
 
 export type CalculatorOutput = {
   recipes: ReadonlyArray<OutputRecipe>;
-} & Production;
+  production: Production;
+};
 
 export function calculate(input: CalculatorInput): CalculatorOutput {
   const recipes: ReadonlyArray<OutputRecipe> = input.recipes.map(
@@ -26,7 +27,7 @@ export function calculate(input: CalculatorInput): CalculatorOutput {
 
   return {
     recipes,
-    ...sumProduction(
+    production: sumProduction(
       ...recipes.map((m) => multiplyProduction(m.recipe, m.quantity))
     ),
   };
@@ -51,7 +52,7 @@ export function combineOutputs(
 
   return {
     recipes,
-    ...sumProduction(...outputs),
+    production: sumProduction(...outputs.map((o) => o.production)),
   };
 }
 

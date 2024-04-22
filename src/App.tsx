@@ -1,15 +1,19 @@
-import { AppBar, Box, Container, Toolbar, Typography } from "@mui/material";
+import { AppBar, Box, Container } from "@mui/material";
+import MainMenu from "./MainMenu.js";
 import Recipes from "./Recipes.js";
 import Result from "./Result.js";
 import { ProductionPlanContext } from "./context.js";
 import { useProductionPlan } from "./state/index.js";
+import { StorageProvider } from "./storage/provider.js";
 import { ThemeProvider } from "./theme.js";
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <Main />
-    </ThemeProvider>
+    <StorageProvider>
+      <ThemeProvider>
+        <Main />
+      </ThemeProvider>
+    </StorageProvider>
   );
 }
 
@@ -19,9 +23,7 @@ function Main() {
   return (
     <ProductionPlanContext plan={plan} dispatch={dispatch}>
       <AppBar position="static">
-        <Toolbar>
-          <Typography variant="h5">Industry Planner</Typography>
-        </Toolbar>
+        <MainMenu />
       </AppBar>
       <Container sx={{ py: 2 }}>
         <Box sx={{ display: "flex", flexDirection: "column", gap: 1 }}>

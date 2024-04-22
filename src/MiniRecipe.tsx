@@ -7,9 +7,9 @@ import { Fragment } from "react/jsx-runtime";
 import ProductIcon from "./ProductIcon.js";
 import ProductQuantity from "./ProductQuantity.js";
 import { getProduct } from "./game/game.js";
-import type { ProductQuantity as Quantity, Recipe } from "./game/types.js";
+import type { Production, ProductQuantity as Quantity } from "./game/types.js";
 
-export default function MiniRecipe({ recipe }: { recipe: Recipe }) {
+export default function MiniRecipe({ recipe }: { recipe: Production }) {
   return (
     <Box
       component="span"
@@ -43,7 +43,8 @@ function Products({
             product.type === "loose" ||
             product.type == "molten" ||
             product.type == "pollution" ||
-            product.type == "mech"
+            product.type == "mech" ||
+            (type === "output" && product.type === "electricity")
           );
         })
         .map(({ product, quantity }, index) => (

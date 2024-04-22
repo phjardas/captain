@@ -1,6 +1,7 @@
 import type { CalculatorInput, CalculatorOutput } from "../game/calculator.js";
 
 export type ProductionPlan = {
+  id: string;
   input: CalculatorInput;
   output?: CalculatorOutput;
   error?: Error;
@@ -18,4 +19,18 @@ export type SetRecipeQuantityAction = {
   quantity: number;
 };
 
-export type ProductionPlanAction = AddRecipeAction | SetRecipeQuantityAction;
+export type ResetPlanAction = {
+  type: "reset-plan";
+};
+
+export type ReplacePlanAction = {
+  type: "replace-plan";
+  id: string;
+  input: CalculatorInput;
+};
+
+export type ProductionPlanAction =
+  | AddRecipeAction
+  | SetRecipeQuantityAction
+  | ResetPlanAction
+  | ReplacePlanAction;

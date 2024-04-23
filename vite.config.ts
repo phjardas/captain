@@ -28,10 +28,16 @@ export default defineConfig({
         background_color: "#eceff1",
         icons: [
           {
-            src: "logo.svg",
+            src: "logo-maskable.svg",
             type: "image/svg+xml",
             sizes: "150x150",
             purpose: "maskable",
+          },
+          {
+            src: "logo.svg",
+            type: "image/svg+xml",
+            sizes: "150x150",
+            purpose: "any",
           },
         ],
       },

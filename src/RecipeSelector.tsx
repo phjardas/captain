@@ -142,6 +142,7 @@ function ProductOrMachineSelection({
         label="Search"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
+        fullWidth
       />
       <List>
         {items.slice(0, 10).map((item) => (

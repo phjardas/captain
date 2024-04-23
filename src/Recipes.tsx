@@ -1,8 +1,4 @@
-import {
-  Add as AddIcon,
-  Clear,
-  Remove as RemoveIcon,
-} from "@mui/icons-material";
+import { Clear } from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -10,11 +6,10 @@ import {
   Card,
   CardContent,
   CardHeader,
-  IconButton,
   List,
   ListItem,
   ListItemText,
-  Typography,
+  TextField,
 } from "@mui/material";
 import AddRecipeButton from "./AddRecipeButton.js";
 import MachineIcon from "./MachineIcon.js";
@@ -40,46 +35,31 @@ export default function Recipes() {
       {recipes.length > 0 ? (
         <List>
           {recipes.map(({ recipe, quantity }, i) => (
-            <ListItem key={i}>
-              <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <IconButton
-                    edge="start"
-                    size="small"
-                    onClick={() =>
-                      dispatch({
-                        type: "set-recipe-quantity",
-                        index: i,
-                        quantity: quantity - 1,
-                      })
-                    }
-                    disabled={quantity < 1}
-                  >
-                    <RemoveIcon />
-                  </IconButton>
-                  <Typography component="span">{quantity}</Typography>
-                  <IconButton
-                    edge="end"
-                    size="small"
-                    onClick={() =>
-                      dispatch({
-                        type: "set-recipe-quantity",
-                        index: i,
-                        quantity: quantity + 1,
-                      })
-                    }
-                  >
-                    <AddIcon />
-                  </IconButton>
-                  <MachineIcon machine={getRecipe(game, recipe).machine} />
-                  <ListItemText
-                    primary={
-                      getMachine(game, getRecipe(game, recipe).machine).name
-                    }
-                    secondary={<MiniRecipe recipe={getRecipe(game, recipe)} />}
-                  />
-                </Box>
-              </Box>
+            <ListItem key={i} sx={{ gap: 1 }}>
+              <TextField
+                size="small"
+                value={quantity}
+                onChange={(e) => {
+                  const quantity = parseFloat(e.target.value);
+                  if (!isNaN(quantity))
+                    dispatch({
+                      type: "set-recipe-quantity",
+                      index: i,
+                      quantity,
+                    });
+                }}
+                inputProps={{
+                  min: 0,
+                  step: "any",
+                  style: { textAlign: "right" },
+                }}
+                sx={{ width: "4.5rem" }}
+              />
+              <MachineIcon machine={getRecipe(game, recipe).machine} />
+              <ListItemText
+                primary={getMachine(game, getRecipe(game, recipe).machine).name}
+                secondary={<MiniRecipe recipe={getRecipe(game, recipe)} />}
+              />
             </ListItem>
           ))}
         </List>

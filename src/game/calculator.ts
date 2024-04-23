@@ -36,7 +36,7 @@ export function calculate(
     ),
     buildCosts: sumQuantities(
       ...recipes.map((r) =>
-        multiplyQuantities(r.machine.buildCosts, r.quantity)
+        multiplyQuantities(r.machine.buildCosts, Math.ceil(r.quantity))
       )
     ),
   };

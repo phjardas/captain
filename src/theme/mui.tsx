@@ -76,6 +76,13 @@ function useMuiTheme() {
             },
           },
         },
+        MuiOutlinedInput: {
+          styleOverrides: {
+            root: {
+              "--mui-shape-borderRadius": "4px",
+            },
+          },
+        },
         MuiPopover: {
           styleOverrides: {
             root: {

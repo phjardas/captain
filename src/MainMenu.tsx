@@ -1,4 +1,5 @@
-import { Box, Button, Toolbar, Typography } from "@mui/material";
+import { Logout } from "@mui/icons-material";
+import { Box, Button, IconButton, Toolbar, Typography } from "@mui/material";
 import {
   GoogleAuthProvider,
   getAuth,
@@ -20,12 +21,13 @@ export default function MainMenu() {
           (auth.data.user ? (
             <>
               <StoredPlansMenu />
-              <Button
+              <IconButton
                 color="inherit"
+                edge="end"
                 onClick={() => signOut(getAuth(firebase))}
               >
-                Sign out
-              </Button>
+                <Logout />
+              </IconButton>
             </>
           ) : (
             <Button

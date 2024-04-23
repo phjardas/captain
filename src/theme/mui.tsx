@@ -72,7 +72,7 @@ function useMuiTheme() {
         MuiDialog: {
           styleOverrides: {
             paper: {
-              backgroundColor: "var(--mui-palette-md-surface)",
+              "--mui-palette-background-paper": "var(--mui-palette-md-surface)",
             },
           },
         },

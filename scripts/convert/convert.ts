@@ -25,13 +25,34 @@ import {
   type Recipe as RecipeData,
 } from "./types.js";
 
+const ignoredProducts = [
+  "AnyCountableProduct",
+  "AnyFluidProduct",
+  "AnyLooseProduct",
+  "AnyMoltenProduct",
+  "AnyVirtualProduct",
+];
+
+const ignoredMachines = [
+  "StorageFluid",
+  "StorageUnit",
+  "StorageLoose",
+  "AnyMoltenStorage",
+  "AnyVirtualStorage",
+];
+
 export function convertGameData(
   data: Data,
   images: Record<string, string>
 ): GameData {
   const products: Record<string, Product> = toMap(
     data.items
-      .filter((item) => !item.isAbstractClassItem && item.type !== undefined)
+      .filter(
+        (item) =>
+          !item.isAbstractClassItem &&
+          item.type !== undefined &&
+          !ignoredProducts.includes(item.name)
+      )
       .map((item) => ({
         id: item.name,
         name: item.label,
@@ -53,7 +74,10 @@ export function convertGameData(
   const recipes: Array<Recipe> = [];
 
   const machines: Array<Machine> = data.items
-    .filter((item) => item.recipe !== undefined)
+    .filter(
+      (item) =>
+        item.recipe !== undefined && !ignoredMachines.includes(item.name)
+    )
     .map((item) => {
       const itemRecipes: Array<Recipe> = (
         recipeDictionary[item.recipe!.recipeDictionary] ?? []

@@ -7,19 +7,23 @@ import ProductionPlanContext from "./context.js";
 import GameProvider from "./game/provider.js";
 import { useProductionPlan } from "./state/index.js";
 import StorageProvider from "./storage/provider.js";
-import ThemeProvider from "./theme.js";
+import ThemeColorChooser from "./theme/color-chooser.js";
+import ThemeColorProvider from "./theme/color-provider.js";
+import ThemeProvider from "./theme/mui.js";
 
 export default function App() {
   return (
-    <ThemeProvider>
-      <AuthenticationProvider>
-        <GameProvider>
-          <StorageProvider>
-            <Main />
-          </StorageProvider>
-        </GameProvider>
-      </AuthenticationProvider>
-    </ThemeProvider>
+    <ThemeColorProvider>
+      <ThemeProvider>
+        <AuthenticationProvider>
+          <GameProvider>
+            <StorageProvider>
+              <Main />
+            </StorageProvider>
+          </GameProvider>
+        </AuthenticationProvider>
+      </ThemeProvider>
+    </ThemeColorProvider>
   );
 }
 
@@ -28,7 +32,11 @@ function Main() {
 
   return (
     <ProductionPlanContext plan={plan} dispatch={dispatch}>
-      <AppBar position="fixed">
+      <ThemeColorChooser
+        key={plan.mainProduct?.icon}
+        imageData={plan.mainProduct?.icon}
+      />
+      <AppBar position="fixed" elevation={0}>
         <MainMenu />
       </AppBar>
       <Toolbar />

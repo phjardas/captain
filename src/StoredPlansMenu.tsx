@@ -56,7 +56,10 @@ function StoredPlansMenuImpl({ plans }: { plans: ReadonlyArray<StoredPlan> }) {
                 popupState.close();
               }}
             >
-              <ListItemText primary={<MiniRecipe recipe={plan.production} />} />
+              <ListItemText
+                primary={plan.label}
+                secondary={<MiniRecipe recipe={plan.production} />}
+              />
               <IconButton
                 edge="end"
                 sx={{ ml: 2 }}

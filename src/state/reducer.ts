@@ -1,8 +1,12 @@
 import { useCallback, type Reducer } from "react";
-import { calculate, type CalculatorInput } from "../game/calculator.js";
+import {
+  CalculatorOutput,
+  calculate,
+  type CalculatorInput,
+} from "../game/calculator.js";
 import { useGame } from "../game/context.js";
-import { getRecipe } from "../game/game.js";
-import type { GameData } from "../game/types.js";
+import { getProduct, getRecipe } from "../game/game.js";
+import type { GameData, Product } from "../game/types.js";
 import type {
   AddRecipeAction,
   ProductionPlan,
@@ -53,7 +57,8 @@ function apply<TAction extends ProductionPlanAction>(
         const output = plan.input.recipes.length
           ? calculate(game, plan.input)
           : undefined;
-        return { ...plan, output, error: undefined };
+        const mainProduct = output ? getMainProduct(game, output) : undefined;
+        return { ...plan, output, mainProduct, error: undefined };
       } catch (error: any) {
         return { ...plan, error };
       }
@@ -61,6 +66,27 @@ function apply<TAction extends ProductionPlanAction>(
       return { ...state, error };
     }
   };
+}
+
+function getMainProduct(
+  game: GameData,
+  output: CalculatorOutput
+): Product | undefined {
+  const products = Object.entries(output.production.outputs)
+    .sort((a, b) => b[1] - a[1])
+    .map(([product]) => getProduct(game, product));
+
+  if (!products.length) return;
+
+  return (
+    products.find(
+      (p) =>
+        ["fluid", "loose", "countable", "molten"].includes(p.type) &&
+        !["Exhaust", "Recyclables"].includes(p.id)
+    ) ||
+    products.find((p) => ["Maintenance"].includes(p.id)) ||
+    products[0]
+  );
 }
 
 function applyInput<TAction extends ProductionPlanAction>(

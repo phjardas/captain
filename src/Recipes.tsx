@@ -28,12 +28,15 @@ export default function Recipes() {
   const game = useGame();
   const {
     input: { recipes },
+    mainProduct,
   } = useProductionPlan();
   const dispatch = useProductionPlanDispatch();
 
   return (
     <Card>
-      <CardHeader title="Recipes" />
+      <CardHeader
+        title={mainProduct ? `${mainProduct.name} production` : "Production"}
+      />
       {recipes.length > 0 ? (
         <List>
           {recipes.map(({ recipe, quantity }, i) => (

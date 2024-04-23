@@ -1,8 +1,10 @@
 import type { CalculatorInput, CalculatorOutput } from "../game/calculator.js";
+import type { Product } from "../game/types.js";
 
 export type ProductionPlan = {
   id: string;
   input: CalculatorInput;
+  mainProduct?: Product;
   output?: CalculatorOutput;
   error?: Error;
 };

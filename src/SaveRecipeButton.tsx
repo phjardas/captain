@@ -4,7 +4,7 @@ import { useProductionPlan } from "./context.js";
 import { useSaveProductionPlan, useStorage } from "./storage/context.js";
 
 export default function SaveRecipeButton() {
-  const { id, input, output } = useProductionPlan();
+  const { id, input, output, mainProduct } = useProductionPlan();
   const storage = useStorage();
   const saveProductionPlan = useSaveProductionPlan();
 
@@ -14,7 +14,12 @@ export default function SaveRecipeButton() {
       color="primary"
       startIcon={<Save />}
       onClick={() => {
-        saveProductionPlan({ id, input, production: output.production });
+        saveProductionPlan({
+          id,
+          label: mainProduct?.name,
+          input,
+          production: output.production,
+        });
       }}
     >
       Save plan

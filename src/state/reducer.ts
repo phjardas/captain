@@ -83,7 +83,10 @@ function getMainProduct(
       (p) =>
         ["fluid", "loose", "countable", "molten", "electricity"].includes(
           p.type
-        ) && !["Exhaust", "Recyclables"].includes(p.id)
+        ) &&
+        !["Exhaust", "Recyclables", "Slag", "Water", "Carbon dioxide"].includes(
+          p.id
+        )
     ) ||
     products.find((p) => ["Maintenance"].includes(p.id)) ||
     products[0]

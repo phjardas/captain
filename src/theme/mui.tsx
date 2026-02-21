@@ -5,12 +5,13 @@ import {
   themeFromSourceColor,
   type Theme as MaterialTheme,
 } from "@material/material-color-utilities";
-import { CssBaseline, useMediaQuery } from "@mui/material";
 import {
-  Experimental_CssVarsProvider as CssVarsProvider,
-  experimental_extendTheme as extendTheme,
+  CssBaseline,
+  ThemeProvider as MuiThemeProvider,
+  extendTheme,
   useColorScheme,
-} from "@mui/material/styles";
+  useMediaQuery,
+} from "@mui/material";
 import { useEffect, useMemo, type ReactNode } from "react";
 import { useThemeColor } from "./color.js";
 
@@ -19,7 +20,7 @@ function useMuiTheme() {
 
   return useMemo(() => {
     const theme = themeFromSourceColor(
-      typeof color === "string" ? argbFromHex(color) : color
+      typeof color === "string" ? argbFromHex(color) : color,
     );
 
     return extendTheme({
@@ -107,7 +108,7 @@ function createColorScheme(theme: MaterialTheme, mode: "light" | "dark") {
           const token = key.replace(/([a-z])([A-Z])/g, "$1-$2").toLowerCase();
           const color = hexFromArgb(value);
           return [token, color];
-        })
+        }),
       ),
       primary: { main: hexFromArgb(scheme.primary) },
       secondary: { main: hexFromArgb(scheme.secondary) },
@@ -115,10 +116,10 @@ function createColorScheme(theme: MaterialTheme, mode: "light" | "dark") {
       error: { main: hexFromArgb(scheme.error) },
       background: {
         default: hexFromArgb(
-          theme.palettes.neutral.tone(mode === "light" ? 95 : 0)
+          theme.palettes.neutral.tone(mode === "light" ? 95 : 0),
         ),
         paper: hexFromArgb(
-          theme.palettes.neutral.tone(mode === "light" ? 98 : 5)
+          theme.palettes.neutral.tone(mode === "light" ? 98 : 5),
         ),
       },
       text: {
@@ -133,11 +134,11 @@ export default function ThemeProvider({ children }: { children: ReactNode }) {
   const theme = useMuiTheme();
 
   return (
-    <CssVarsProvider theme={theme}>
+    <MuiThemeProvider theme={theme}>
       <CssBaseline />
       <ModeSwitcher />
       {children}
-    </CssVarsProvider>
+    </MuiThemeProvider>
   );
 }
 

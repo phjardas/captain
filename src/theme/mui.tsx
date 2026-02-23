@@ -84,15 +84,6 @@ function useMuiTheme() {
             },
           },
         },
-        MuiPopover: {
-          styleOverrides: {
-            root: {
-              ".MuiPaper-root": {
-                backgroundColor: "var(--mui-palette-md-surface)",
-              },
-            },
-          },
-        },
       },
     });
   }, [color]);

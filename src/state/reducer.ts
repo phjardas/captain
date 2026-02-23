@@ -37,7 +37,7 @@ export function useProductionPlanReducer(): Reducer<
           throw new Error(`Invalid action: ${(action as any).type}`);
       }
     },
-    [game]
+    [game],
   );
 }
 
@@ -46,8 +46,8 @@ function apply<TAction extends ProductionPlanAction>(
   applyer: (
     game: GameData,
     plan: ProductionPlan,
-    action: TAction
-  ) => ProductionPlan
+    action: TAction,
+  ) => ProductionPlan,
 ): Reducer<ProductionPlan, ProductionPlanAction> {
   return (state, action) => {
     try {
@@ -70,7 +70,7 @@ function apply<TAction extends ProductionPlanAction>(
 
 function getMainProduct(
   game: GameData,
-  output: CalculatorOutput
+  output: CalculatorOutput,
 ): Product | undefined {
   const products = Object.entries(output.production.outputs)
     .sort((a, b) => b[1] - a[1])
@@ -82,11 +82,17 @@ function getMainProduct(
     products.find(
       (p) =>
         ["fluid", "loose", "countable", "molten", "electricity"].includes(
-          p.type
+          p.type,
         ) &&
-        !["Exhaust", "Recyclables", "Slag", "Water", "Carbon dioxide"].includes(
-          p.id
-        )
+        ![
+          "Exhaust",
+          "Recyclables",
+          "Slag",
+          "Water",
+          "CarbonDioxide",
+          "SteamLP",
+          "SteamDepleted",
+        ].includes(p.id),
     ) ||
     products.find((p) => ["Maintenance"].includes(p.id)) ||
     products[0]
@@ -98,8 +104,8 @@ function applyInput<TAction extends ProductionPlanAction>(
   applyer: (
     game: GameData,
     input: CalculatorInput,
-    action: TAction
-  ) => CalculatorInput
+    action: TAction,
+  ) => CalculatorInput,
 ): Reducer<ProductionPlan, ProductionPlanAction> {
   return apply(game, (game, state, action) => {
     const input = applyer(game, state.input, action as TAction);
@@ -110,7 +116,7 @@ function applyInput<TAction extends ProductionPlanAction>(
 function addRecipe(
   game: GameData,
   input: CalculatorInput,
-  action: AddRecipeAction
+  action: AddRecipeAction,
 ): CalculatorInput {
   getRecipe(game, action.recipe);
 
@@ -126,7 +132,7 @@ function addRecipe(
 function setRecipeQuantity(
   game: GameData,
   input: CalculatorInput,
-  action: SetRecipeQuantityAction
+  action: SetRecipeQuantityAction,
 ): CalculatorInput {
   return {
     ...input,
@@ -136,7 +142,7 @@ function setRecipeQuantity(
         : input.recipes.map((recipe, index) =>
             index === action.index
               ? { ...recipe, quantity: action.quantity }
-              : recipe
+              : recipe,
           ),
   };
 }
@@ -148,7 +154,7 @@ function resetPlan(): ProductionPlan {
 function replacePlan(
   _: GameData,
   __: ProductionPlan,
-  action: ReplacePlanAction
+  action: ReplacePlanAction,
 ): ProductionPlan {
   return { id: action.id, input: action.input };
 }

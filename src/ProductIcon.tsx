@@ -24,8 +24,12 @@ export default function ProductIcon({
   return (
     <>
       <img src={icon} width={size} height={size} {...bindHover(popupState)} />
-      <Popper {...bindPopper(popupState)} {...bindToggle(popupState)}>
-        <Paper sx={{ px: 1, py: 0.5 }}>
+      <Popper
+        {...bindPopper(popupState)}
+        {...bindToggle(popupState)}
+        sx={{ zIndex: "var(--mui-zIndex-tooltip)" }}
+      >
+        <Paper sx={{ px: 1.5, py: 0.5 }}>
           <Typography>{name}</Typography>
         </Paper>
       </Popper>

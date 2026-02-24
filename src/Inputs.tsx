@@ -1,15 +1,7 @@
-import {
-  Card,
-  CardHeader,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-} from "@mui/material";
-import ProductIcon from "./ProductIcon.js";
-import ProductQuantity from "./ProductQuantity.js";
+import { Card, CardHeader, List } from "@mui/material";
 import { useGame } from "./game/context.js";
 import { getProduct } from "./game/game.js";
+import ProductListItem from "./ProductListItem.js";
 
 export default function Inputs({ inputs }: { inputs: Record<string, number> }) {
   const game = useGame();
@@ -31,20 +23,7 @@ export default function Inputs({ inputs }: { inputs: Record<string, number> }) {
           })
           .sort((a, b) => b[1] - a[1])
           .map(([product, quantity], i) => (
-            <ListItem key={i}>
-              <ListItemIcon>
-                <ProductIcon product={product} />
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  <ProductQuantity
-                    product={product}
-                    quantity={quantity}
-                    hideName
-                  />
-                }
-              />
-            </ListItem>
+            <ProductListItem product={product} quantity={quantity} key={i} />
           ))}
       </List>
     </Card>

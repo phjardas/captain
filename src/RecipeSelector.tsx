@@ -23,13 +23,18 @@ import { getMachine } from "./game/game.js";
 import type { Machine, Product, Recipe } from "./game/types.js";
 
 export default function RecipeSelector({
+  product: initialProductId,
   open,
   onClose,
 }: {
-  open: boolean;
-  onClose: () => void;
+  readonly product?: string;
+  readonly open: boolean;
+  readonly onClose: () => void;
 }) {
-  const [product, setProduct] = useState<Product>();
+  const game = useGame();
+  const [product, setProduct] = useState<Product | undefined>(() =>
+    initialProductId ? game.products[initialProductId] : undefined,
+  );
   const [machine, setMachine] = useState<Machine>();
   const dispatch = useProductionPlanDispatch();
 
@@ -37,7 +42,7 @@ export default function RecipeSelector({
     <Dialog
       title={
         product
-          ? `Select recipe to produce ${product.name}`
+          ? `Select recipe for ${product.name}`
           : machine
             ? `Select recipe for ${machine.name}`
             : "Select product or machine"
@@ -119,7 +124,7 @@ function ProductOrMachineSelection({
               product,
               id: product.id,
               name: product.name,
-            }) as ProductOrMachine
+            }) as ProductOrMachine,
         ),
       ...Object.values(game.machines)
         .filter((product) => product.name.toLocaleLowerCase().includes(s))
@@ -130,7 +135,7 @@ function ProductOrMachineSelection({
               machine,
               id: machine.id,
               name: machine.name,
-            }) as ProductOrMachine
+            }) as ProductOrMachine,
         ),
     ].toSorted((a, b) => a.name.localeCompare(b.name));
   }, [game.products, search]);
@@ -189,7 +194,7 @@ function ProductRecipeSelection({
       Object.values(game.recipes)
         .filter((recipe) => product.id in recipe.outputs)
         .toSorted((a, b) => a.id.localeCompare(b.id)),
-    [game.recipes, product?.id]
+    [game.recipes, product?.id],
   );
 
   const inputRecipes = useMemo(
@@ -197,7 +202,7 @@ function ProductRecipeSelection({
       Object.values(game.recipes)
         .filter((recipe) => product.id in recipe.inputs)
         .toSorted((a, b) => a.id.localeCompare(b.id)),
-    [game.recipes, product?.id]
+    [game.recipes, product?.id],
   );
 
   return (
@@ -229,7 +234,7 @@ function MachineRecipeSelection({
       Object.values(game.recipes)
         .filter((recipe) => recipe.machine === machine?.id)
         .toSorted((a, b) => a.id.localeCompare(b.id)),
-    [game.recipes, machine?.id]
+    [game.recipes, machine?.id],
   );
 
   return (

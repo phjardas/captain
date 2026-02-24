@@ -29,7 +29,9 @@ export default function ProductListItem({
               }
             />
           </ListItemButton>
-          <RecipeSelector product={product} {...bindPopover(popupState)} />
+          {popupState.isOpen && (
+            <RecipeSelector product={product} {...bindPopover(popupState)} />
+          )}
         </>
       )}
     </PopupState>

@@ -11,6 +11,7 @@ import {
   ListItemText,
   TextField,
 } from "@mui/material";
+import { useState } from "react";
 import AddRecipeButton from "./AddRecipeButton.js";
 import MachineIcon from "./MachineIcon.js";
 import MiniRecipe from "./MiniRecipe.js";
@@ -20,7 +21,6 @@ import { useGame } from "./game/context.js";
 import { getMachine, getRecipe } from "./game/game.js";
 
 export default function Recipes() {
-  const game = useGame();
   const {
     input: { recipes },
     mainProduct,
@@ -35,32 +35,7 @@ export default function Recipes() {
       {recipes.length > 0 ? (
         <List>
           {recipes.map(({ recipe, quantity }, i) => (
-            <ListItem key={i} sx={{ gap: 1 }}>
-              <TextField
-                size="small"
-                value={quantity}
-                onChange={(e) => {
-                  const quantity = parseFloat(e.target.value);
-                  if (!isNaN(quantity))
-                    dispatch({
-                      type: "set-recipe-quantity",
-                      index: i,
-                      quantity,
-                    });
-                }}
-                inputProps={{
-                  min: 0,
-                  step: "any",
-                  style: { textAlign: "right" },
-                }}
-                sx={{ width: "4.5rem" }}
-              />
-              <MachineIcon machine={getRecipe(game, recipe).machine} />
-              <ListItemText
-                primary={getMachine(game, getRecipe(game, recipe).machine).name}
-                secondary={<MiniRecipe recipe={getRecipe(game, recipe)} />}
-              />
-            </ListItem>
+            <RecipeItem key={i} recipe={recipe} quantity={quantity} index={i} />
           ))}
         </List>
       ) : (
@@ -88,5 +63,44 @@ export default function Recipes() {
         )}
       </Box>
     </Card>
+  );
+}
+
+function RecipeItem({
+  recipe,
+  quantity: initialQuantity,
+  index,
+}: {
+  readonly recipe: string;
+  readonly quantity: number;
+  readonly index: number;
+}) {
+  const game = useGame();
+  const dispatch = useProductionPlanDispatch();
+  const [quantity, setQuantity] = useState(() => initialQuantity.toString());
+
+  return (
+    <ListItem sx={{ gap: 1 }}>
+      <TextField
+        size="small"
+        value={quantity}
+        onChange={(e) => setQuantity(e.target.value)}
+        onBlur={(e) => {
+          const quantity = parseFloat(e.target.value);
+          if (!isNaN(quantity)) {
+            dispatch({ type: "set-recipe-quantity", index, quantity });
+          }
+        }}
+        sx={{ width: "4.5rem", input: { textAlign: "right" } }}
+        slotProps={{
+          htmlInput: { min: 0, step: "any" },
+        }}
+      />
+      <MachineIcon machine={getRecipe(game, recipe).machine} />
+      <ListItemText
+        primary={getMachine(game, getRecipe(game, recipe).machine).name}
+        secondary={<MiniRecipe recipe={getRecipe(game, recipe)} />}
+      />
+    </ListItem>
   );
 }

@@ -130,17 +130,20 @@ function addRecipe(
 }
 
 function setRecipeQuantity(
-  _: GameData,
+  game: GameData,
   input: CalculatorInput,
   action: SetRecipeQuantityAction,
 ): CalculatorInput {
   return {
     ...input,
-    recipes: input.recipes.map((recipe, index) =>
-      index === action.index
-        ? { ...recipe, quantity: action.quantity }
-        : recipe,
-    ),
+    recipes:
+      action.quantity <= 0
+        ? input.recipes.filter((_, i) => i !== action.index)
+        : input.recipes.map((recipe, index) =>
+            index === action.index
+              ? { ...recipe, quantity: action.quantity }
+              : recipe,
+          ),
   };
 }
 

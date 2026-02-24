@@ -1,4 +1,4 @@
-import { Clear } from "@mui/icons-material";
+import { Clear, Delete } from "@mui/icons-material";
 import {
   Alert,
   Box,
@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   CardHeader,
+  IconButton,
   List,
   ListItem,
   ListItemText,
@@ -80,7 +81,19 @@ function RecipeItem({
   const [quantity, setQuantity] = useState(() => initialQuantity.toString());
 
   return (
-    <ListItem sx={{ gap: 1 }}>
+    <ListItem
+      sx={{ gap: 1 }}
+      secondaryAction={
+        <IconButton
+          edge="end"
+          onClick={() =>
+            dispatch({ type: "set-recipe-quantity", index, quantity: 0 })
+          }
+        >
+          <Delete />
+        </IconButton>
+      }
+    >
       <TextField
         size="small"
         value={quantity}

@@ -5,5 +5,5 @@ export function createInitialState(): ProductionPlan {
 }
 
 function createId(): string {
-  return Math.random().toString(36).slice(2);
+  return window.crypto.randomUUID();
 }

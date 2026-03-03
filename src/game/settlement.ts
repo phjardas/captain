@@ -79,16 +79,19 @@ export type ProductDemand = {
 };
 
 export type SettlementDemands = {
-  readonly foodDemands: readonly ProductDemand[];
-  readonly waterDemands: readonly ProductDemand[];
+  readonly food: readonly ProductDemand[];
+  readonly infrastructure: readonly ProductDemand[];
 };
 
 export function calculateSettlementDemands(
   settlement: Settlement,
 ): SettlementDemands {
   return {
-    foodDemands: calculateFoodDemands(settlement),
-    waterDemands: calculateWaterDemands(settlement),
+    food: calculateFoodDemands(settlement),
+    infrastructure: [
+      ...calculateWaterDemands(settlement),
+      ...calculateElectricityDemands(settlement),
+    ],
   };
 }
 

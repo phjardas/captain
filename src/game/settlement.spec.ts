@@ -155,6 +155,7 @@ describe("calculateUnity", () => {
       food: 1,
       amenities: 0,
       infrastructure: 0,
+      medicine: 0,
     });
   });
 
@@ -170,6 +171,7 @@ describe("calculateUnity", () => {
       food: 1,
       amenities: 0,
       infrastructure: 2.2,
+      medicine: 0,
     });
   });
 
@@ -185,6 +187,7 @@ describe("calculateUnity", () => {
       food: 1.55,
       amenities: 0,
       infrastructure: 0,
+      medicine: 0,
     });
   });
 
@@ -200,6 +203,7 @@ describe("calculateUnity", () => {
       food: 1,
       amenities: 2.8,
       infrastructure: 0,
+      medicine: 0,
     });
   });
 
@@ -227,6 +231,7 @@ describe("calculateUnity", () => {
       food: 1,
       amenities: 0,
       infrastructure: 1.2,
+      medicine: 0,
     });
   });
 
@@ -246,6 +251,7 @@ describe("calculateUnity", () => {
       food: 1,
       amenities: 0,
       infrastructure: 0,
+      medicine: 0,
     });
   });
 
@@ -318,5 +324,90 @@ describe("calculateHealth", () => {
     });
 
     expect(health.water).toBe(10);
+  });
+
+  it("should add medicine health from Medical Supplies I", () => {
+    const { health } = calculateSettlementDemands({
+      population: 500,
+      housingTier: 1,
+      suppliedMedicalSupply: "MedicalSupplies",
+    });
+
+    expect(health.medicine).toBe(15);
+  });
+
+  it("should add medicine health from Medical Supplies II", () => {
+    const { health } = calculateSettlementDemands({
+      population: 500,
+      housingTier: 1,
+      suppliedMedicalSupply: "MedicalSupplies2",
+    });
+
+    expect(health.medicine).toBe(20);
+  });
+
+  it("should add medicine health from Medical Supplies III", () => {
+    const { health } = calculateSettlementDemands({
+      population: 500,
+      housingTier: 1,
+      suppliedMedicalSupply: "MedicalSupplies3",
+    });
+
+    expect(health.medicine).toBe(25);
+  });
+});
+
+describe("medical supply demands", () => {
+  it("should not have medical supply demand when none supplied", () => {
+    const { medicalSupply } = calculateSettlementDemands({
+      population: 500,
+      housingTier: 1,
+    });
+
+    expect(medicalSupply).toEqual([]);
+  });
+
+  it("should calculate medical supply demand based on population", () => {
+    const { medicalSupply } = calculateSettlementDemands({
+      population: 1000,
+      housingTier: 1,
+      suppliedMedicalSupply: "MedicalSupplies",
+    });
+
+    expect(medicalSupply).toEqual([
+      { product: "MedicalSupplies", demand: 5.4 },
+    ]);
+  });
+
+  it("should calculate demand for Medical Supplies II", () => {
+    const { medicalSupply } = calculateSettlementDemands({
+      population: 2000,
+      housingTier: 1,
+      suppliedMedicalSupply: "MedicalSupplies2",
+    });
+
+    expect(medicalSupply).toEqual([
+      { product: "MedicalSupplies2", demand: 10.8 },
+    ]);
+  });
+
+  it("should add unity from medical supplies", () => {
+    const { unity } = calculateSettlementDemands({
+      population: 500,
+      housingTier: 1,
+      suppliedMedicalSupply: "MedicalSupplies",
+    });
+
+    expect(unity.medicine).toBe(0.6);
+  });
+
+  it("should add higher unity from Medical Supplies III", () => {
+    const { unity } = calculateSettlementDemands({
+      population: 500,
+      housingTier: 1,
+      suppliedMedicalSupply: "MedicalSupplies3",
+    });
+
+    expect(unity.medicine).toBe(1.2);
   });
 });

@@ -337,6 +337,24 @@ export const amenities: readonly Amenity[] = [
   },
 ];
 
+export type MedicalSupplyId =
+  | "MedicalSupplies"
+  | "MedicalSupplies2"
+  | "MedicalSupplies3";
+
+export type MedicalSupply = {
+  readonly product: MedicalSupplyId;
+  readonly baseDemandPer1000: number;
+  readonly unity: number;
+  readonly health: number;
+};
+
+export const medicalSupplies: readonly MedicalSupply[] = [
+  { product: "MedicalSupplies", baseDemandPer1000: 5.4, unity: 0.6, health: 15 },
+  { product: "MedicalSupplies2", baseDemandPer1000: 5.4, unity: 0.8, health: 20 },
+  { product: "MedicalSupplies3", baseDemandPer1000: 5.4, unity: 1.2, health: 25 },
+];
+
 export type DifficultyLevel = {
   readonly label: string;
   readonly factor: number;
@@ -361,6 +379,7 @@ export type Settlement = {
   readonly suppliedFoodTypes?: readonly FoodId[];
   readonly suppliedServices?: readonly ServiceId[];
   readonly suppliedAmenities?: readonly AmenityId[];
+  readonly suppliedMedicalSupply?: MedicalSupplyId;
   readonly activeEdicts?: Partial<Record<EdictId, number>>;
   readonly difficulty?: Difficulty;
 };
@@ -376,6 +395,7 @@ type UnitySummary = {
   readonly food: number;
   readonly infrastructure: number;
   readonly amenities: number;
+  readonly medicine: number;
 };
 
 type HealthSummary = {
@@ -390,6 +410,7 @@ export type SettlementDemands = {
   readonly infrastructure: readonly ProductDemand[];
   readonly waste: readonly ProductDemand[];
   readonly amenities: readonly ProductDemand[];
+  readonly medicalSupply: readonly ProductDemand[];
   readonly unity: UnitySummary;
   readonly health: HealthSummary;
 };
@@ -404,6 +425,7 @@ export function calculateSettlementDemands(
   const food = calculateFoodDemands(settlement);
   const amenities = calculateAmenitiesDemands(settlement);
   const waste = calculateWasteDemands(settlement, food);
+  const medicalSupply = calculateMedicalSupplyDemands(settlement);
   const demands = [...infrastructure, ...amenities, ...food];
 
   const unity = calculateUnity(settlement, demands);
@@ -414,6 +436,7 @@ export function calculateSettlementDemands(
     infrastructure,
     waste,
     amenities,
+    medicalSupply,
     unity,
     health,
   };
@@ -605,6 +628,22 @@ export function calculateAmenitiesDemands(
   );
 }
 
+function calculateMedicalSupplyDemands(
+  settlement: Settlement,
+): readonly ProductDemand[] {
+  const supply = medicalSupplies.find(
+    (m) => m.product === settlement.suppliedMedicalSupply,
+  );
+  if (!supply) return [];
+
+  return [
+    {
+      product: supply.product,
+      demand: (supply.baseDemandPer1000 * settlement.population) / 1000,
+    },
+  ];
+}
+
 // visible for tests
 export function calculateUnity(
   settlement: Settlement,
@@ -671,16 +710,25 @@ export function calculateUnity(
       return sum + (amenityData?.unity?.(settlement) ?? 0) * unityFactor;
     }, 0) * unityFactor;
 
-  // FIXME add unity from medical supplies
+  const medicineUnity =
+    medicalSupplies.find((m) => m.product === settlement.suppliedMedicalSupply)
+      ?.unity ?? 0;
+
   // FIXME add unity from internet
   // FIXME add unity from square
 
   return {
-    total: edictsUnity + foodUnity + amenitiesUnity + infrastructureUnity,
+    total:
+      edictsUnity +
+      foodUnity +
+      amenitiesUnity +
+      infrastructureUnity +
+      medicineUnity,
     edicts: edictsUnity,
     food: foodUnity,
     amenities: amenitiesUnity,
     infrastructure: infrastructureUnity,
+    medicine: medicineUnity,
   };
 }
 
@@ -699,8 +747,9 @@ function calculateHealth(
     ? 10
     : 0;
 
-  // FIXME calculate health from medical supplies
-  const medicine = 0;
+  const medicine =
+    medicalSupplies.find((m) => m.product === settlement.suppliedMedicalSupply)
+      ?.health ?? 0;
 
   return {
     total: food + water + medicine,

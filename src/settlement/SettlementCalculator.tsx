@@ -31,6 +31,8 @@ import {
   foods,
   type HousingTierId,
   housingTiers,
+  medicalSupplies,
+  type MedicalSupplyId,
   services,
   type Settlement,
   type SettlementDemands,
@@ -69,7 +71,7 @@ function SettlementEditor({
     <Card>
       <CardHeader title="Settlement" />
       <CardContent>
-        <Box sx={{ display: "flex", gap: 2 }}>
+        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 2 }}>
           <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
             <TextField
               label="Population"
@@ -103,45 +105,25 @@ function SettlementEditor({
               </Select>
             </FormControl>
             <FormControl>
-              <InputLabel>Food Consumption</InputLabel>
+              <InputLabel>Medical Supply</InputLabel>
               <Select
-                label="Food Consumption"
-                value={settlement.difficulty?.foodConsumption ?? 1}
+                label="Medical Supply"
+                value={settlement.suppliedMedicalSupply ?? ""}
                 onChange={(e) =>
                   onChange((s) => ({
                     ...s,
-                    difficulty: {
-                      ...s.difficulty,
-                      foodConsumption: e.target.value as number,
-                    },
+                    suppliedMedicalSupply:
+                      (e.target.value as MedicalSupplyId) || undefined,
                   }))
                 }
               >
-                {consumptionDifficultyLevels.map((level) => (
-                  <MenuItem key={level.factor} value={level.factor}>
-                    {level.label}
-                  </MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <FormControl>
-              <InputLabel>Goods & Services Consumption</InputLabel>
-              <Select
-                label="Goods & Services Consumption"
-                value={settlement.difficulty?.goodsConsumption ?? 1}
-                onChange={(e) =>
-                  onChange((s) => ({
-                    ...s,
-                    difficulty: {
-                      ...s.difficulty,
-                      goodsConsumption: e.target.value as number,
-                    },
-                  }))
-                }
-              >
-                {consumptionDifficultyLevels.map((level) => (
-                  <MenuItem key={level.factor} value={level.factor}>
-                    {level.label}
+                <MenuItem value="">None</MenuItem>
+                {medicalSupplies.map((supply) => (
+                  <MenuItem key={supply.product} value={supply.product}>
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                      <ProductIcon product={supply.product} size={24} />
+                      {getProduct(game, supply.product).name}
+                    </Box>
                   </MenuItem>
                 ))}
               </Select>
@@ -181,71 +163,77 @@ function SettlementEditor({
               />
             ))}
           </FormControl>
-          <FormControl component="fieldset" variant="standard">
-            <FormLabel component="legend">Supplied Amenities</FormLabel>
-            {amenities.map((amenity) => (
-              <FormControlLabel
-                key={amenity.product}
-                control={
-                  <Checkbox
-                    checked={settlement.suppliedAmenities?.includes(
-                      amenity.product,
-                    )}
-                    onChange={(e) =>
-                      onChange((s) => ({
-                        ...s,
-                        suppliedAmenities: e.target.checked
-                          ? [...(s.suppliedAmenities ?? []), amenity.product]
-                          : s.suppliedAmenities?.filter(
-                              (a) => a !== amenity.product,
-                            ),
-                      }))
-                    }
-                  />
-                }
-                label={
-                  <Box
-                    component="span"
-                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                  >
-                    <ProductIcon product={amenity.product} />{" "}
-                    {getProduct(game, amenity.product).name}
-                  </Box>
-                }
-              />
-            ))}
-          </FormControl>
-          <FormControl component="fieldset" variant="standard">
-            <FormLabel component="legend">Supplied Services</FormLabel>
-            {services.map((service) => (
-              <FormControlLabel
-                key={service.id}
-                control={
-                  <Checkbox
-                    checked={settlement.suppliedServices?.includes(service.id)}
-                    onChange={(e) =>
-                      onChange((s) => ({
-                        ...s,
-                        suppliedServices: e.target.checked
-                          ? [...(s.suppliedServices ?? []), service.id]
-                          : s.suppliedServices?.filter((a) => a !== service.id),
-                      }))
-                    }
-                  />
-                }
-                label={
-                  <Box
-                    component="span"
-                    sx={{ display: "flex", alignItems: "center", gap: 1 }}
-                  >
-                    <ProductIcon product={service.id} />{" "}
-                    {getProduct(game, service.id).name}
-                  </Box>
-                }
-              />
-            ))}
-          </FormControl>
-          <FormControl component="fieldset" variant="standard">
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <FormControl component="fieldset" variant="standard">
+              <FormLabel component="legend">Supplied Amenities</FormLabel>
+              {amenities.map((amenity) => (
+                <FormControlLabel
+                  key={amenity.product}
+                  control={
+                    <Checkbox
+                      checked={settlement.suppliedAmenities?.includes(
+                        amenity.product,
+                      )}
+                      onChange={(e) =>
+                        onChange((s) => ({
+                          ...s,
+                          suppliedAmenities: e.target.checked
+                            ? [...(s.suppliedAmenities ?? []), amenity.product]
+                            : s.suppliedAmenities?.filter(
+                                (a) => a !== amenity.product,
+                              ),
+                        }))
+                      }
+                    />
+                  }
+                  label={
+                    <Box
+                      component="span"
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    >
+                      <ProductIcon product={amenity.product} />{" "}
+                      {getProduct(game, amenity.product).name}
+                    </Box>
+                  }
+                />
+              ))}
+            </FormControl>
+            <FormControl component="fieldset" variant="standard">
+              <FormLabel component="legend">Supplied Services</FormLabel>
+              {services.map((service) => (
+                <FormControlLabel
+                  key={service.id}
+                  control={
+                    <Checkbox
+                      checked={settlement.suppliedServices?.includes(
+                        service.id,
+                      )}
+                      onChange={(e) =>
+                        onChange((s) => ({
+                          ...s,
+                          suppliedServices: e.target.checked
+                            ? [...(s.suppliedServices ?? []), service.id]
+                            : s.suppliedServices?.filter(
+                                (a) => a !== service.id,
+                              ),
+                        }))
+                      }
+                    />
+                  }
+                  label={
+                    <Box
+                      component="span"
+                      sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                    >
+                      <ProductIcon product={service.id} />{" "}
+                      {getProduct(game, service.id).name}
+                    </Box>
+                  }
+                />
+              ))}
+            </FormControl>
+          </Box>
+          <FormControl component="fieldset" variant="standard" sx={{ px: 2 }}>
             <FormLabel component="legend">Edicts</FormLabel>
             <Box
               sx={{
@@ -295,6 +283,62 @@ function SettlementEditor({
               })}
             </Box>
           </FormControl>
+          <FormControl component="fieldset" variant="standard">
+            <FormLabel component="legend">Difficulty</FormLabel>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                mt: 1,
+              }}
+            >
+              <FormControl>
+                <InputLabel>Food Consumption</InputLabel>
+                <Select
+                  label="Food Consumption"
+                  value={settlement.difficulty?.foodConsumption ?? 1}
+                  onChange={(e) =>
+                    onChange((s) => ({
+                      ...s,
+                      difficulty: {
+                        ...s.difficulty,
+                        foodConsumption: e.target.value as number,
+                      },
+                    }))
+                  }
+                >
+                  {consumptionDifficultyLevels.map((level) => (
+                    <MenuItem key={level.factor} value={level.factor}>
+                      {level.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <FormControl>
+                <InputLabel>Goods & Services Consumption</InputLabel>
+                <Select
+                  label="Goods & Services Consumption"
+                  value={settlement.difficulty?.goodsConsumption ?? 1}
+                  onChange={(e) =>
+                    onChange((s) => ({
+                      ...s,
+                      difficulty: {
+                        ...s.difficulty,
+                        goodsConsumption: e.target.value as number,
+                      },
+                    }))
+                  }
+                >
+                  {consumptionDifficultyLevels.map((level) => (
+                    <MenuItem key={level.factor} value={level.factor}>
+                      {level.label}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Box>
+          </FormControl>
         </Box>
       </CardContent>
     </Card>
@@ -302,14 +346,22 @@ function SettlementEditor({
 }
 
 function DemandsDisplay({
-  demands: { food, infrastructure, amenities, waste, unity, health },
+  demands: {
+    food,
+    infrastructure,
+    amenities,
+    waste,
+    medicalSupply,
+    unity,
+    health,
+  },
 }: {
   readonly demands: SettlementDemands;
 }) {
   return (
     <Card>
       <CardHeader title="Demands" />
-      <Box sx={{ display: "flex", gap: 4 }}>
+      <Box sx={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
         <List subheader={<ListSubheader>Food</ListSubheader>}>
           {food.map((demand) => (
             <ProductListItem
@@ -330,6 +382,13 @@ function DemandsDisplay({
         </List>
         <List subheader={<ListSubheader>Infrastructure</ListSubheader>}>
           {infrastructure.map((demand) => (
+            <ProductListItem
+              key={demand.product}
+              product={demand.product}
+              quantity={Math.abs(demand.demand)}
+            />
+          ))}
+          {medicalSupply.map((demand) => (
             <ProductListItem
               key={demand.product}
               product={demand.product}
@@ -379,6 +438,14 @@ function DemandsDisplay({
                     <span>
                       Amenities:{" "}
                       {unity.amenities.toLocaleString(undefined, {
+                        maximumFractionDigits: 1,
+                      })}
+                    </span>
+                  )}
+                  {unity.medicine > 0 && (
+                    <span>
+                      Medicine:{" "}
+                      {unity.medicine.toLocaleString(undefined, {
                         maximumFractionDigits: 1,
                       })}
                     </span>

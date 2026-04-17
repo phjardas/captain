@@ -25,6 +25,7 @@ import { getProduct } from "../game/game.js";
 import {
   amenities,
   calculateSettlementDemands,
+  consumptionDifficultyLevels,
   edicts,
   foods,
   type HousingTierId,
@@ -96,6 +97,50 @@ function SettlementEditor({
                 {housingTiers.map((tier) => (
                   <MenuItem key={tier.id} value={tier.id}>
                     {tier.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel>Food Consumption</InputLabel>
+              <Select
+                label="Food Consumption"
+                value={settlement.difficulty?.foodConsumption ?? 1}
+                onChange={(e) =>
+                  onChange((s) => ({
+                    ...s,
+                    difficulty: {
+                      ...s.difficulty,
+                      foodConsumption: e.target.value as number,
+                    },
+                  }))
+                }
+              >
+                {consumptionDifficultyLevels.map((level) => (
+                  <MenuItem key={level.factor} value={level.factor}>
+                    {level.label}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl>
+              <InputLabel>Goods & Services Consumption</InputLabel>
+              <Select
+                label="Goods & Services Consumption"
+                value={settlement.difficulty?.goodsConsumption ?? 1}
+                onChange={(e) =>
+                  onChange((s) => ({
+                    ...s,
+                    difficulty: {
+                      ...s.difficulty,
+                      goodsConsumption: e.target.value as number,
+                    },
+                  }))
+                }
+              >
+                {consumptionDifficultyLevels.map((level) => (
+                  <MenuItem key={level.factor} value={level.factor}>
+                    {level.label}
                   </MenuItem>
                 ))}
               </Select>

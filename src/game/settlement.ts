@@ -246,6 +246,24 @@ export const amenities: readonly Amenity[] = [
   },
 ];
 
+export type DifficultyLevel = {
+  readonly label: string;
+  readonly factor: number;
+};
+
+export const consumptionDifficultyLevels: readonly DifficultyLevel[] = [
+  { label: "-40%", factor: 0.6 },
+  { label: "-20%", factor: 0.8 },
+  { label: "Standard", factor: 1.0 },
+  { label: "+20%", factor: 1.2 },
+  { label: "+40%", factor: 1.4 },
+];
+
+export type Difficulty = {
+  readonly foodConsumption?: number;
+  readonly goodsConsumption?: number;
+};
+
 export type Settlement = {
   readonly population: number;
   readonly housingTier?: HousingTierId;
@@ -253,6 +271,7 @@ export type Settlement = {
   readonly suppliedServices?: readonly ServiceId[];
   readonly suppliedAmenities?: readonly AmenityId[];
   readonly activeEdicts?: Partial<Record<EdictId, number>>;
+  readonly difficulty?: Difficulty;
 };
 
 export type ProductDemand = {
@@ -303,7 +322,8 @@ export function calculateFoodDemands(
 
   const foodFactor =
     getEdictFactor(settlement.activeEdicts, "FoodSaver") *
-    getEdictFactor(settlement.activeEdicts, "PlentyOfFood");
+    getEdictFactor(settlement.activeEdicts, "PlentyOfFood") *
+    (settlement.difficulty?.foodConsumption ?? 1);
 
   return applyHousingFactors(
     suppliedFood.map(
@@ -446,6 +466,8 @@ export function calculateAmenitiesDemands(
     ),
   };
 
+  const goodsFactor = settlement.difficulty?.goodsConsumption ?? 1;
+
   return applyHousingFactors(
     amenities
       .filter((a) => settlement.suppliedAmenities?.includes(a.product))
@@ -455,7 +477,8 @@ export function calculateAmenitiesDemands(
             product: a.product,
             demand:
               ((a.baseDemandPer1000 * settlement.population) / 1000) *
-              (amenityEdictFactors[a.product] ?? 1),
+              (amenityEdictFactors[a.product] ?? 1) *
+              goodsFactor,
           }) satisfies ProductDemand,
       ),
     settlement.housingTier,

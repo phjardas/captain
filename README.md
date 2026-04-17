@@ -5,7 +5,7 @@ Data taken from [Doubleaxe's Calculator](https://github.com/doubleaxe/daxfb-calc
 ## TODO
 
 - Calculate Unity
+- Calculate Health
 - Internet
-- Difficulty Settings
 - Infinite Research
 - Focus Points

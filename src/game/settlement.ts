@@ -378,12 +378,20 @@ type UnitySummary = {
   readonly amenities: number;
 };
 
+type HealthSummary = {
+  readonly total: number;
+  readonly food: number;
+  readonly water: number;
+  readonly medicine: number;
+};
+
 export type SettlementDemands = {
   readonly food: readonly ProductDemand[];
   readonly infrastructure: readonly ProductDemand[];
   readonly waste: readonly ProductDemand[];
   readonly amenities: readonly ProductDemand[];
   readonly unity: UnitySummary;
+  readonly health: HealthSummary;
 };
 
 export function calculateSettlementDemands(
@@ -396,11 +404,10 @@ export function calculateSettlementDemands(
   const food = calculateFoodDemands(settlement);
   const amenities = calculateAmenitiesDemands(settlement);
   const waste = calculateWasteDemands(settlement, food);
-  const unity = calculateUnity(settlement, [
-    ...infrastructure,
-    ...amenities,
-    ...food,
-  ]);
+  const demands = [...infrastructure, ...amenities, ...food];
+
+  const unity = calculateUnity(settlement, demands);
+  const health = calculateHealth(settlement, demands);
 
   return {
     food,
@@ -408,6 +415,7 @@ export function calculateSettlementDemands(
     waste,
     amenities,
     unity,
+    health,
   };
 }
 
@@ -673,6 +681,32 @@ export function calculateUnity(
     food: foodUnity,
     amenities: amenitiesUnity,
     infrastructure: infrastructureUnity,
+  };
+}
+
+// visible for tests
+function calculateHealth(
+  settlement: Settlement,
+  demands: readonly ProductDemand[],
+): HealthSummary {
+  const foodCategoriesCount = demands
+    .map((d) => foods.find((f) => f.product === d.product)?.category)
+    .filter(Boolean)
+    .filter((v, i, a) => a.indexOf(v) === i).length;
+  const food = (foodCategoriesCount - 1) * 4;
+
+  const water = demands.some((d) => d.product === "Water" && d.demand > 0)
+    ? 10
+    : 0;
+
+  // FIXME calculate health from medical supplies
+  const medicine = 0;
+
+  return {
+    total: food + water + medicine,
+    food,
+    water,
+    medicine,
   };
 }
 

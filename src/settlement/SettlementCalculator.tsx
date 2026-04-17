@@ -1,3 +1,4 @@
+import FavoriteIcon from "@mui/icons-material/Favorite";
 import {
   Box,
   Card,
@@ -301,7 +302,7 @@ function SettlementEditor({
 }
 
 function DemandsDisplay({
-  demands: { food, infrastructure, amenities, waste, unity },
+  demands: { food, infrastructure, amenities, waste, unity, health },
 }: {
   readonly demands: SettlementDemands;
 }) {
@@ -386,6 +387,51 @@ function DemandsDisplay({
                     <span>
                       Edicts:{" "}
                       {unity.edicts.toLocaleString(undefined, {
+                        maximumFractionDigits: 1,
+                      })}
+                    </span>
+                  )}
+                </Box>
+              }
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <FavoriteIcon color="error" />
+            </ListItemIcon>
+            <ListItemText
+              primary={health.total.toLocaleString(undefined, {
+                maximumFractionDigits: 1,
+              })}
+              secondary={
+                <Box
+                  component="span"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  {health.water !== 0 && (
+                    <span>
+                      Water:{" "}
+                      {health.water.toLocaleString(undefined, {
+                        maximumFractionDigits: 1,
+                      })}
+                    </span>
+                  )}
+                  {health.food !== 0 && (
+                    <span>
+                      Food:{" "}
+                      {health.food.toLocaleString(undefined, {
+                        maximumFractionDigits: 1,
+                      })}
+                    </span>
+                  )}
+                  {health.medicine !== 0 && (
+                    <span>
+                      Medicine:{" "}
+                      {health.medicine.toLocaleString(undefined, {
                         maximumFractionDigits: 1,
                       })}
                     </span>

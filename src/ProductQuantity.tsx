@@ -40,9 +40,13 @@ function getQuantity(product: Product, quantity: number): string {
           }) + " MW"
         );
       }
-      return `${quantity.toLocaleString()} kW`;
+      return `${quantity.toLocaleString(undefined, {
+        maximumFractionDigits: 0,
+      })} kW`;
 
     default:
-      return `${quantity.toLocaleString()}`;
+      return `${quantity.toLocaleString(undefined, {
+        maximumFractionDigits: 2,
+      })}`;
   }
 }

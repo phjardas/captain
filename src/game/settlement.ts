@@ -18,6 +18,7 @@ export type Food = {
   readonly category: FoodCategory;
   readonly baseDemandPer1000: number;
   readonly biomassPerItem?: number;
+  readonly unity?: number;
 };
 
 export const foods: readonly Food[] = [
@@ -26,66 +27,77 @@ export const foods: readonly Food[] = [
     category: "Carbs",
     baseDemandPer1000: 42,
     biomassPerItem: 0.12,
+    unity: 0.15,
   },
   {
     product: "Corn",
     category: "Carbs",
     baseDemandPer1000: 30,
     biomassPerItem: 0.12,
+    unity: 0.15,
   },
   {
     product: "Bread",
     category: "Carbs",
     baseDemandPer1000: 20,
     biomassPerItem: 0.072,
+    unity: 0.3,
   },
   {
     product: "Meat",
     category: "Protein",
     baseDemandPer1000: 27,
     biomassPerItem: 0.17,
+    unity: 0.4,
   },
   {
     product: "Eggs",
     category: "Protein",
     baseDemandPer1000: 30,
     biomassPerItem: 0.12,
+    unity: 0.3,
   },
   {
     product: "Tofu",
     category: "Protein",
     baseDemandPer1000: 18,
     biomassPerItem: 0.066,
+    unity: 0.3,
   },
   {
     product: "Sausage",
     category: "Protein",
     baseDemandPer1000: 33.5,
     biomassPerItem: 0.18,
+    unity: 0.1,
   },
   {
     product: "Vegetables",
     category: "Vitamins",
     baseDemandPer1000: 42,
     biomassPerItem: 0.12,
+    unity: 0.2,
   },
   {
     product: "Fruit",
     category: "Vitamins",
     baseDemandPer1000: 31.5,
     biomassPerItem: 0.12,
+    unity: 0.3,
   },
   {
     product: "Snack",
     category: "Treats",
     baseDemandPer1000: 26,
     biomassPerItem: 0.036,
+    unity: 0.25,
   },
   {
     product: "Cake",
     category: "Treats",
     baseDemandPer1000: 25,
     biomassPerItem: 0.036,
+    unity: 0.55,
   },
 ];
 
@@ -94,11 +106,14 @@ export type EdictId =
   | "PlentyOfFood"
   | "MoreHouseholdGoods"
   | "MoreHouseholdAppliances"
+  | "MoreConsumerElectronics"
   | "WaterSaver";
 
 export type EdictLevel = {
   readonly label: string;
-  readonly factor: number;
+  readonly demandFactor: number;
+  readonly unityAmount?: number;
+  readonly unityFactor?: number;
 };
 
 export type Edict = {
@@ -112,43 +127,79 @@ export const edicts: readonly Edict[] = [
     id: "FoodSaver",
     name: "Food Saver",
     levels: [
-      { label: "Level 1 (-20%)", factor: 0.8 },
-      { label: "Level 2 (-30%)", factor: 0.7 },
+      { label: "Level 1 (-20%)", demandFactor: 0.8, unityAmount: -1 },
+      { label: "Level 2 (-30%)", demandFactor: 0.7, unityAmount: -2 },
     ],
   },
   {
     id: "PlentyOfFood",
     name: "Plenty of Food",
     levels: [
-      { label: "Level 1 (+20%)", factor: 1.2 },
-      { label: "Level 2 (+40%)", factor: 1.4 },
+      { label: "Level 1 (+20%)", demandFactor: 1.2, unityAmount: 1 },
+      { label: "Level 2 (+40%)", demandFactor: 1.4, unityAmount: 2 },
     ],
   },
   {
     id: "MoreHouseholdGoods",
     name: "More Household Goods",
     levels: [
-      { label: "Level 1 (+20%)", factor: 1.2 },
-      { label: "Level 2 (+40%)", factor: 1.4 },
-      { label: "Level 3 (+70%)", factor: 1.7 },
+      { label: "Level 1 (+20%)", demandFactor: 1.2, unityFactor: 1.2 },
+      { label: "Level 2 (+40%)", demandFactor: 1.4, unityFactor: 1.2 * 1.2 },
+      {
+        label: "Level 3 (+70%)",
+        demandFactor: 1.7,
+        unityFactor: 1.2 * 1.2 * 1.2,
+      },
     ],
   },
   {
     id: "MoreHouseholdAppliances",
     name: "More Household Appliances",
     levels: [
-      { label: "Level 1 (+20%)", factor: 1.2 },
-      { label: "Level 2 (+40%)", factor: 1.4 },
-      { label: "Level 3 (+70%)", factor: 1.7 },
+      { label: "Level 1 (+20%)", demandFactor: 1.2, unityFactor: 1.2 },
+      { label: "Level 2 (+40%)", demandFactor: 1.4, unityFactor: 1.2 * 1.2 },
+      {
+        label: "Level 3 (+70%)",
+        demandFactor: 1.7,
+        unityFactor: 1.2 * 1.2 * 1.2,
+      },
+    ],
+  },
+  {
+    id: "MoreConsumerElectronics",
+    name: "More Consumer Electronics",
+    levels: [
+      { label: "Level 1 (+20%)", demandFactor: 1.2, unityFactor: 1.2 },
+      { label: "Level 2 (+40%)", demandFactor: 1.4, unityFactor: 1.2 * 1.2 },
+      {
+        label: "Level 3 (+70%)",
+        demandFactor: 1.7,
+        unityFactor: 1.2 * 1.2 * 1.2,
+      },
     ],
   },
   {
     id: "WaterSaver",
     name: "Water Saver",
     levels: [
-      { label: "Level 1 (-15%)", factor: 0.85 },
-      { label: "Level 2 (-27%)", factor: 0.73 },
-      { label: "Level 3 (-35%)", factor: 0.65 },
+      {
+        label: "Level 1 (-15%)",
+        demandFactor: 0.85,
+        unityFactor: 1.2,
+        unityAmount: -1,
+      },
+      {
+        label: "Level 2 (-27%)",
+        demandFactor: 0.73,
+        unityFactor: 1.2,
+        unityAmount: -2,
+      },
+      {
+        label: "Level 3 (-35%)",
+        demandFactor: 0.65,
+        unityFactor: 1.2,
+        unityAmount: -3,
+      },
     ],
   },
 ];
@@ -158,41 +209,76 @@ export type HousingTierId = 1 | 2 | 3 | 4;
 export type HousingTier = {
   readonly id: HousingTierId;
   readonly name: string;
-  readonly factors?: Record<string, number>;
+  readonly unityFactor: (provided: {
+    readonly electricity?: boolean;
+    readonly water?: boolean;
+    readonly householdGoods?: boolean;
+    readonly householdAppliances?: boolean;
+    readonly consumerElectronics?: boolean;
+  }) => number;
+  readonly factors: Record<string, number>;
+};
+
+const housingTier1: HousingTier = {
+  id: 1,
+  name: "Housing",
+  factors: {},
+  unityFactor: () => 1,
+};
+
+const housingTier2: HousingTier = {
+  id: 2,
+  name: "Housing II",
+  factors: { Electricity: 1.1, Water: 1.05, WasteWater: 1.05, Unity: 1.5 },
+  unityFactor: (provided) =>
+    provided.electricity && provided.water
+      ? 1.5
+      : housingTier1.unityFactor(provided),
+};
+
+const housingTier3: HousingTier = {
+  id: 3,
+  name: "Housing III",
+  factors: {
+    Electricity: 1.2,
+    Water: 1.1,
+    WasteWater: 1.1,
+    HouseholdGoods: 1.05,
+  },
+  unityFactor: (provided) =>
+    provided.electricity && provided.water && provided.householdGoods
+      ? provided.householdAppliances
+        ? 2
+        : 1.75
+      : housingTier2.unityFactor(provided),
+};
+
+const housingTier4: HousingTier = {
+  id: 4,
+  name: "Housing IV",
+  factors: {
+    Electricity: 1.4,
+    Water: 1.2,
+    WasteWater: 1.2,
+    HouseholdGoods: 1.1,
+    HouseholdAppliances: 1.1,
+    LuxuryGoods: 1.1,
+  },
+  unityFactor: (provided) =>
+    provided.electricity &&
+    provided.water &&
+    provided.householdGoods &&
+    provided.householdAppliances &&
+    provided.consumerElectronics
+      ? 2.25
+      : housingTier3.unityFactor(provided),
 };
 
 export const housingTiers: readonly HousingTier[] = [
-  {
-    id: 1,
-    name: "Housing",
-  },
-  {
-    id: 2,
-    name: "Housing II",
-    factors: { Electricity: 1.1, Water: 1.05, WasteWater: 1.05 },
-  },
-  {
-    id: 3,
-    name: "Housing III",
-    factors: {
-      Electricity: 1.2,
-      Water: 1.1,
-      WasteWater: 1.1,
-      HouseholdGoods: 1.05,
-    },
-  },
-  {
-    id: 4,
-    name: "Housing IV",
-    factors: {
-      Electricity: 1.4,
-      Water: 1.2,
-      WasteWater: 1.2,
-      HouseholdGoods: 1.1,
-      HouseholdAppliances: 1.1,
-      LuxuryGoods: 1.1,
-    },
-  },
+  housingTier1,
+  housingTier2,
+  housingTier3,
+  housingTier4,
 ];
 
 export type ServiceId = "Biomass" | "Recyclables";
@@ -218,6 +304,7 @@ export type Amenity = {
   readonly biomassProductionPer1000?: number;
   readonly recyclablesProductionPer1000?: number;
   readonly wasteForRecyclablesProductionPer1000?: number;
+  readonly unity?: (settlement: Settlement) => number;
 };
 
 export const amenities: readonly Amenity[] = [
@@ -227,22 +314,26 @@ export const amenities: readonly Amenity[] = [
     biomassProductionPer1000: 4.3,
     recyclablesProductionPer1000: 6.8,
     wasteForRecyclablesProductionPer1000: 3.6,
+    unity: () => 1.4,
   },
   {
     product: "HouseholdAppliances",
     baseDemandPer1000: 7,
     recyclablesProductionPer1000: 9.4,
     wasteForRecyclablesProductionPer1000: 2.9,
+    unity: () => 1.4,
   },
   {
     product: "LuxuryGoods",
     baseDemandPer1000: 3.6,
+    unity: (settlement) => (settlement.population / 10000) * 3.6,
   },
   {
     product: "ConsumerElectronics",
     baseDemandPer1000: 3.6,
     recyclablesProductionPer1000: 6.1,
     wasteForRecyclablesProductionPer1000: 0.7,
+    unity: () => 1.8,
   },
 ];
 
@@ -279,26 +370,44 @@ export type ProductDemand = {
   readonly demand: number;
 };
 
+type UnitySummary = {
+  readonly total: number;
+  readonly edicts: number;
+  readonly food: number;
+  readonly infrastructure: number;
+  readonly amenities: number;
+};
+
 export type SettlementDemands = {
   readonly food: readonly ProductDemand[];
   readonly infrastructure: readonly ProductDemand[];
   readonly waste: readonly ProductDemand[];
   readonly amenities: readonly ProductDemand[];
+  readonly unity: UnitySummary;
 };
 
 export function calculateSettlementDemands(
   settlement: Settlement,
 ): SettlementDemands {
+  const water = calculateWaterDemands(settlement);
+  const electricity = calculateElectricityDemands(settlement);
+  const infrastructure = [...water, ...electricity];
+
   const food = calculateFoodDemands(settlement);
+  const amenities = calculateAmenitiesDemands(settlement);
+  const waste = calculateWasteDemands(settlement, food);
+  const unity = calculateUnity(settlement, [
+    ...infrastructure,
+    ...amenities,
+    ...food,
+  ]);
 
   return {
     food,
-    infrastructure: [
-      ...calculateWaterDemands(settlement),
-      ...calculateElectricityDemands(settlement),
-    ],
-    waste: calculateWasteDemands(settlement, food),
-    amenities: calculateAmenitiesDemands(settlement),
+    infrastructure,
+    waste,
+    amenities,
+    unity,
   };
 }
 
@@ -321,8 +430,8 @@ export function calculateFoodDemands(
   const numberOfSuppliedCategories = Object.keys(countsPerCategory).length;
 
   const foodFactor =
-    getEdictFactor(settlement.activeEdicts, "FoodSaver") *
-    getEdictFactor(settlement.activeEdicts, "PlentyOfFood") *
+    getEdictFactor(settlement.activeEdicts, "FoodSaver").demandFactor *
+    getEdictFactor(settlement.activeEdicts, "PlentyOfFood").demandFactor *
     (settlement.difficulty?.foodConsumption ?? 1);
 
   return applyHousingFactors(
@@ -365,7 +474,10 @@ export function calculateWaterDemands(
 ): readonly ProductDemand[] {
   const baseWaterDemandPer1000 = 47;
   const baseWasteWaterDemandPer1000 = -39.2;
-  const waterFactor = getEdictFactor(settlement.activeEdicts, "WaterSaver");
+  const waterFactor = getEdictFactor(
+    settlement.activeEdicts,
+    "WaterSaver",
+  ).demandFactor;
 
   return applyHousingFactors(
     [
@@ -459,11 +571,11 @@ export function calculateAmenitiesDemands(
     HouseholdGoods: getEdictFactor(
       settlement.activeEdicts,
       "MoreHouseholdGoods",
-    ),
+    ).demandFactor,
     HouseholdAppliances: getEdictFactor(
       settlement.activeEdicts,
       "MoreHouseholdAppliances",
-    ),
+    ).demandFactor,
   };
 
   const goodsFactor = settlement.difficulty?.goodsConsumption ?? 1;
@@ -485,14 +597,93 @@ export function calculateAmenitiesDemands(
   );
 }
 
+// visible for tests
+export function calculateUnity(
+  settlement: Settlement,
+  demands: readonly ProductDemand[],
+): UnitySummary {
+  const housingTier = housingTiers.find((h) => h.id === settlement.housingTier);
+
+  const hasElectricity = demands.some(
+    (d) => d.product === "Electricity" && d.demand > 0,
+  );
+  const hasWater = demands.some((d) => d.product === "Water" && d.demand > 0);
+  const hasHouseholdGoods = demands.some(
+    (d) => d.product === "HouseholdGoods" && d.demand > 0,
+  );
+  const hasHouseholdAppliances = demands.some(
+    (d) => d.product === "HouseholdAppliances" && d.demand > 0,
+  );
+  const hasConsumerElectronics = demands.some(
+    (d) => d.product === "ConsumerElectronics" && d.demand > 0,
+  );
+
+  const unityFactor =
+    housingTier?.unityFactor?.({
+      electricity: hasElectricity,
+      water: hasWater,
+      householdGoods: hasHouseholdGoods,
+      householdAppliances: hasHouseholdAppliances,
+      consumerElectronics: hasConsumerElectronics,
+    }) ?? 1;
+
+  const edictsUnity = settlement.activeEdicts
+    ? Object.entries(settlement.activeEdicts).reduce(
+        (sum, [edictId, level]) => {
+          const edict = edicts.find((e) => e.id === edictId);
+          const edictLevel = edict?.levels[level - 1];
+          return sum + (edictLevel?.unityAmount ?? 0);
+        },
+        0,
+      )
+    : 0;
+
+  const infrastructureUnity =
+    ((hasWater ? 1 : 0) + (hasElectricity ? 1.2 : 0)) * unityFactor;
+
+  const foodUnity =
+    // base
+    unityFactor +
+    // variety
+    demands.reduce((sum, current) => {
+      if (current.demand <= 0) return sum;
+      const foodData = foods.find((f) => f.product === current.product);
+      return sum + (foodData?.unity ?? 0);
+    }, 0);
+
+  const amenitiesUnity =
+    demands.reduce((sum, current) => {
+      if (current.demand <= 0) return sum;
+      const amenityData = amenities.find((a) => a.product === current.product);
+      const unityFactor =
+        getEdictFactor(
+          settlement.activeEdicts,
+          `More${current.product}` as EdictId,
+        ).unityFactor ?? 1;
+      return sum + (amenityData?.unity?.(settlement) ?? 0) * unityFactor;
+    }, 0) * unityFactor;
+
+  // FIXME add unity from medical supplies
+  // FIXME add unity from internet
+  // FIXME add unity from square
+
+  return {
+    total: edictsUnity + foodUnity + amenitiesUnity + infrastructureUnity,
+    edicts: edictsUnity,
+    food: foodUnity,
+    amenities: amenitiesUnity,
+    infrastructure: infrastructureUnity,
+  };
+}
+
 function getEdictFactor(
   activeEdicts: Partial<Record<EdictId, number>> | undefined,
   edictId: EdictId,
-): number {
+): { readonly demandFactor: number; readonly unityFactor?: number } {
   const level = activeEdicts?.[edictId];
-  if (!level) return 1;
+  if (!level) return { demandFactor: 1 };
   const edict = edicts.find((e) => e.id === edictId);
-  return edict?.levels[level - 1]?.factor ?? 1;
+  return edict?.levels[level - 1] ?? { demandFactor: 1 };
 }
 
 function applyHousingFactors(

@@ -9,3 +9,4 @@ Data taken from [Doubleaxe's Calculator](https://github.com/doubleaxe/daxfb-calc
 - Internet
 - Infinite Research
 - Focus Points
+- Medical Supplies

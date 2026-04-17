@@ -246,14 +246,24 @@ function SettlementEditor({
           </FormControl>
           <FormControl component="fieldset" variant="standard">
             <FormLabel component="legend">Edicts</FormLabel>
-            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1, minWidth: 180 }}>
+            <Box
+              sx={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                mt: 1,
+                minWidth: 180,
+              }}
+            >
               {edicts.map((edict) => {
                 const activeLevel = settlement.activeEdicts?.[edict.id] ?? 0;
                 const marks = [
                   { value: 0, label: "Off" },
                   ...edict.levels.map((level, i) => ({
                     value: i + 1,
-                    label: level.label.replace(/^Level \d+ /, "").replace(/[()]/g, ""),
+                    label: level.label
+                      .replace(/^Level \d+ /, "")
+                      .replace(/[()]/g, ""),
                   })),
                 ];
                 return (
@@ -291,7 +301,7 @@ function SettlementEditor({
 }
 
 function DemandsDisplay({
-  demands: { food, infrastructure, amenities, waste },
+  demands: { food, infrastructure, amenities, waste, unity },
 }: {
   readonly demands: SettlementDemands;
 }) {
@@ -325,6 +335,65 @@ function DemandsDisplay({
               quantity={Math.abs(demand.demand)}
             />
           ))}
+        </List>
+        <List subheader={<ListSubheader>Output</ListSubheader>}>
+          <ListItem>
+            <ListItemIcon>
+              <ProductIcon product="Upoints" />
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                <ProductQuantity
+                  product="Upoints"
+                  quantity={unity.total}
+                  hideName
+                />
+              }
+              secondary={
+                <Box
+                  component="span"
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  {unity.infrastructure > 0 && (
+                    <span>
+                      Infrastructure:{" "}
+                      {unity.infrastructure.toLocaleString(undefined, {
+                        maximumFractionDigits: 1,
+                      })}
+                    </span>
+                  )}
+                  {unity.food > 0 && (
+                    <span>
+                      Food:{" "}
+                      {unity.food.toLocaleString(undefined, {
+                        maximumFractionDigits: 1,
+                      })}
+                    </span>
+                  )}
+                  {unity.amenities > 0 && (
+                    <span>
+                      Amenities:{" "}
+                      {unity.amenities.toLocaleString(undefined, {
+                        maximumFractionDigits: 1,
+                      })}
+                    </span>
+                  )}
+                  {unity.edicts !== 0 && (
+                    <span>
+                      Edicts:{" "}
+                      {unity.edicts.toLocaleString(undefined, {
+                        maximumFractionDigits: 1,
+                      })}
+                    </span>
+                  )}
+                </Box>
+              }
+            />
+          </ListItem>
         </List>
         <List subheader={<ListSubheader>Waste</ListSubheader>}>
           {waste.map((demand) => (

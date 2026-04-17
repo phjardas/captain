@@ -89,6 +89,70 @@ export const foods: readonly Food[] = [
   },
 ];
 
+export type EdictId =
+  | "FoodSaver"
+  | "PlentyOfFood"
+  | "MoreHouseholdGoods"
+  | "MoreHouseholdAppliances"
+  | "WaterSaver";
+
+export type EdictLevel = {
+  readonly label: string;
+  readonly factor: number;
+};
+
+export type Edict = {
+  readonly id: EdictId;
+  readonly name: string;
+  readonly levels: readonly EdictLevel[];
+};
+
+export const edicts: readonly Edict[] = [
+  {
+    id: "FoodSaver",
+    name: "Food Saver",
+    levels: [
+      { label: "Level 1 (-20%)", factor: 0.8 },
+      { label: "Level 2 (-30%)", factor: 0.7 },
+    ],
+  },
+  {
+    id: "PlentyOfFood",
+    name: "Plenty of Food",
+    levels: [
+      { label: "Level 1 (+20%)", factor: 1.2 },
+      { label: "Level 2 (+40%)", factor: 1.4 },
+    ],
+  },
+  {
+    id: "MoreHouseholdGoods",
+    name: "More Household Goods",
+    levels: [
+      { label: "Level 1 (+20%)", factor: 1.2 },
+      { label: "Level 2 (+40%)", factor: 1.4 },
+      { label: "Level 3 (+70%)", factor: 1.7 },
+    ],
+  },
+  {
+    id: "MoreHouseholdAppliances",
+    name: "More Household Appliances",
+    levels: [
+      { label: "Level 1 (+20%)", factor: 1.2 },
+      { label: "Level 2 (+40%)", factor: 1.4 },
+      { label: "Level 3 (+70%)", factor: 1.7 },
+    ],
+  },
+  {
+    id: "WaterSaver",
+    name: "Water Saver",
+    levels: [
+      { label: "Level 1 (-15%)", factor: 0.85 },
+      { label: "Level 2 (-27%)", factor: 0.73 },
+      { label: "Level 3 (-35%)", factor: 0.65 },
+    ],
+  },
+];
+
 export type HousingTierId = 1 | 2 | 3 | 4;
 
 export type HousingTier = {
@@ -188,6 +252,7 @@ export type Settlement = {
   readonly suppliedFoodTypes?: readonly FoodId[];
   readonly suppliedServices?: readonly ServiceId[];
   readonly suppliedAmenities?: readonly AmenityId[];
+  readonly activeEdicts?: Partial<Record<EdictId, number>>;
 };
 
 export type ProductDemand = {
@@ -236,16 +301,21 @@ export function calculateFoodDemands(
 
   const numberOfSuppliedCategories = Object.keys(countsPerCategory).length;
 
+  const foodFactor =
+    getEdictFactor(settlement.activeEdicts, "FoodSaver") *
+    getEdictFactor(settlement.activeEdicts, "PlentyOfFood");
+
   return applyHousingFactors(
     suppliedFood.map(
       (food) =>
         ({
           product: food.product,
           demand:
-            (food.baseDemandPer1000 * settlement.population) /
-            1000 /
-            numberOfSuppliedCategories /
-            (countsPerCategory[food.category] ?? 1),
+            ((food.baseDemandPer1000 * settlement.population) /
+              1000 /
+              numberOfSuppliedCategories /
+              (countsPerCategory[food.category] ?? 1)) *
+            foodFactor,
         }) satisfies ProductDemand,
     ),
     settlement.housingTier,
@@ -275,16 +345,21 @@ export function calculateWaterDemands(
 ): readonly ProductDemand[] {
   const baseWaterDemandPer1000 = 47;
   const baseWasteWaterDemandPer1000 = -39.2;
+  const waterFactor = getEdictFactor(settlement.activeEdicts, "WaterSaver");
 
   return applyHousingFactors(
     [
       {
         product: "Water",
-        demand: (baseWaterDemandPer1000 * settlement.population) / 1000,
+        demand:
+          ((baseWaterDemandPer1000 * settlement.population) / 1000) *
+          waterFactor,
       },
       {
         product: "WasteWater",
-        demand: (baseWasteWaterDemandPer1000 * settlement.population) / 1000,
+        demand:
+          ((baseWasteWaterDemandPer1000 * settlement.population) / 1000) *
+          waterFactor,
       },
     ],
     settlement.housingTier,
@@ -360,6 +435,17 @@ export function calculateWasteDemands(
 export function calculateAmenitiesDemands(
   settlement: Settlement,
 ): readonly ProductDemand[] {
+  const amenityEdictFactors: Partial<Record<AmenityId, number>> = {
+    HouseholdGoods: getEdictFactor(
+      settlement.activeEdicts,
+      "MoreHouseholdGoods",
+    ),
+    HouseholdAppliances: getEdictFactor(
+      settlement.activeEdicts,
+      "MoreHouseholdAppliances",
+    ),
+  };
+
   return applyHousingFactors(
     amenities
       .filter((a) => settlement.suppliedAmenities?.includes(a.product))
@@ -367,11 +453,23 @@ export function calculateAmenitiesDemands(
         (a) =>
           ({
             product: a.product,
-            demand: (a.baseDemandPer1000 * settlement.population) / 1000,
+            demand:
+              ((a.baseDemandPer1000 * settlement.population) / 1000) *
+              (amenityEdictFactors[a.product] ?? 1),
           }) satisfies ProductDemand,
       ),
     settlement.housingTier,
   );
+}
+
+function getEdictFactor(
+  activeEdicts: Partial<Record<EdictId, number>> | undefined,
+  edictId: EdictId,
+): number {
+  const level = activeEdicts?.[edictId];
+  if (!level) return 1;
+  const edict = edicts.find((e) => e.id === edictId);
+  return edict?.levels[level - 1]?.factor ?? 1;
 }
 
 function applyHousingFactors(

@@ -15,7 +15,9 @@ import {
   ListSubheader,
   MenuItem,
   Select,
+  Slider,
   TextField,
+  Typography,
 } from "@mui/material";
 import { type Dispatch, type SetStateAction, useState } from "react";
 import { useGame } from "../game/context.js";
@@ -23,6 +25,7 @@ import { getProduct } from "../game/game.js";
 import {
   amenities,
   calculateSettlementDemands,
+  edicts,
   foods,
   type HousingTierId,
   housingTiers,
@@ -195,6 +198,46 @@ function SettlementEditor({
                 }
               />
             ))}
+          </FormControl>
+          <FormControl component="fieldset" variant="standard">
+            <FormLabel component="legend">Edicts</FormLabel>
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 2, mt: 1, minWidth: 180 }}>
+              {edicts.map((edict) => {
+                const activeLevel = settlement.activeEdicts?.[edict.id] ?? 0;
+                const marks = [
+                  { value: 0, label: "Off" },
+                  ...edict.levels.map((level, i) => ({
+                    value: i + 1,
+                    label: level.label.replace(/^Level \d+ /, "").replace(/[()]/g, ""),
+                  })),
+                ];
+                return (
+                  <Box key={edict.id}>
+                    <Typography variant="caption" color="text.secondary">
+                      {edict.name}
+                    </Typography>
+                    <Slider
+                      min={0}
+                      max={edict.levels.length}
+                      step={1}
+                      marks={marks}
+                      value={activeLevel}
+                      onChange={(_, value) =>
+                        onChange((s) => ({
+                          ...s,
+                          activeEdicts: {
+                            ...s.activeEdicts,
+                            [edict.id]: value as number,
+                          },
+                        }))
+                      }
+                      valueLabelDisplay="off"
+                      sx={{ mb: 1 }}
+                    />
+                  </Box>
+                );
+              })}
+            </Box>
           </FormControl>
         </Box>
       </CardContent>

@@ -46,11 +46,11 @@ describe("calculateFoodDemands", () => {
     });
 
     expect(demands).toEqual([
-      { product: "Potato", demand: 8.652 },
+      { product: "Potato", demand: 8.65 },
       { product: "Corn", demand: 6.18 },
       { product: "Bread", demand: 4.12 },
-      { product: "Tofu", demand: 11.124 },
-      { product: "Vegetables", demand: 25.956 },
+      { product: "Tofu", demand: 11.12 },
+      { product: "Vegetables", demand: 25.96 },
     ]);
   });
 });
@@ -75,7 +75,7 @@ describe("calculateWaterDemands", () => {
     });
 
     expect(demands).toEqual([
-      { product: "Water", demand: 24.675 },
+      { product: "Water", demand: 24.68 },
       { product: "WasteWater", demand: -20.58 },
     ]);
   });

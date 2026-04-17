@@ -4,9 +4,7 @@ Data taken from [Doubleaxe's Calculator](https://github.com/doubleaxe/daxfb-calc
 
 ## TODO
 
-- Calculate Unity
-- Calculate Health
+- Calculate Unity for internet and square
 - Internet
 - Infinite Research
 - Focus Points
-- Medical Supplies

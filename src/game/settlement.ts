@@ -380,6 +380,7 @@ export type Settlement = {
   readonly suppliedServices?: readonly ServiceId[];
   readonly suppliedAmenities?: readonly AmenityId[];
   readonly suppliedMedicalSupply?: MedicalSupplyId;
+  readonly hasSquare?: boolean;
   readonly activeEdicts?: Partial<Record<EdictId, number>>;
   readonly difficulty?: Difficulty;
 };
@@ -396,6 +397,7 @@ type UnitySummary = {
   readonly infrastructure: number;
   readonly amenities: number;
   readonly medicine: number;
+  readonly square: number;
 };
 
 type HealthSummary = {
@@ -714,8 +716,9 @@ export function calculateUnity(
     medicalSupplies.find((m) => m.product === settlement.suppliedMedicalSupply)
       ?.unity ?? 0;
 
+  const squareUnity = settlement.hasSquare ? 1 : 0;
+
   // FIXME add unity from internet
-  // FIXME add unity from square
 
   return {
     total:
@@ -723,12 +726,14 @@ export function calculateUnity(
       foodUnity +
       amenitiesUnity +
       infrastructureUnity +
-      medicineUnity,
+      medicineUnity +
+      squareUnity,
     edicts: edictsUnity,
     food: foodUnity,
     amenities: amenitiesUnity,
     infrastructure: infrastructureUnity,
     medicine: medicineUnity,
+    square: squareUnity,
   };
 }
 

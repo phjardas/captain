@@ -128,6 +128,20 @@ function SettlementEditor({
                 ))}
               </Select>
             </FormControl>
+            <FormControlLabel
+              control={
+                <Checkbox
+                  checked={settlement.hasSquare ?? false}
+                  onChange={(e) =>
+                    onChange((s) => ({
+                      ...s,
+                      hasSquare: e.target.checked,
+                    }))
+                  }
+                />
+              }
+              label="Town Square"
+            />
           </Box>
           <FormControl component="fieldset" variant="standard">
             <FormLabel component="legend">Supplied Food Types</FormLabel>
@@ -446,6 +460,14 @@ function DemandsDisplay({
                     <span>
                       Medicine:{" "}
                       {unity.medicine.toLocaleString(undefined, {
+                        maximumFractionDigits: 1,
+                      })}
+                    </span>
+                  )}
+                  {unity.square > 0 && (
+                    <span>
+                      Square:{" "}
+                      {unity.square.toLocaleString(undefined, {
                         maximumFractionDigits: 1,
                       })}
                     </span>

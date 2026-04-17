@@ -156,6 +156,7 @@ describe("calculateUnity", () => {
       amenities: 0,
       infrastructure: 0,
       medicine: 0,
+      square: 0,
     });
   });
 
@@ -172,6 +173,7 @@ describe("calculateUnity", () => {
       amenities: 0,
       infrastructure: 2.2,
       medicine: 0,
+      square: 0,
     });
   });
 
@@ -188,6 +190,7 @@ describe("calculateUnity", () => {
       amenities: 0,
       infrastructure: 0,
       medicine: 0,
+      square: 0,
     });
   });
 
@@ -204,6 +207,7 @@ describe("calculateUnity", () => {
       amenities: 2.8,
       infrastructure: 0,
       medicine: 0,
+      square: 0,
     });
   });
 
@@ -232,6 +236,7 @@ describe("calculateUnity", () => {
       amenities: 0,
       infrastructure: 1.2,
       medicine: 0,
+      square: 0,
     });
   });
 
@@ -252,6 +257,7 @@ describe("calculateUnity", () => {
       amenities: 0,
       infrastructure: 0,
       medicine: 0,
+      square: 0,
     });
   });
 
@@ -274,6 +280,28 @@ describe("calculateUnity", () => {
     ]);
 
     expect(unity.food).toBe(1);
+  });
+
+  it("should add +1 unity from square connection", () => {
+    const unity = calculateUnity(
+      { population: 500, housingTier: 1, hasSquare: true },
+      [],
+    );
+
+    expect(unity.square).toBe(1);
+    expect(unity.total).toBe(2);
+  });
+
+  it("should not multiply square unity by housing tier factor", () => {
+    const unity = calculateUnity(
+      { population: 500, housingTier: 2, hasSquare: true },
+      [
+        { product: "Water", demand: 24.68 },
+        { product: "Electricity", demand: 605 },
+      ],
+    );
+
+    expect(unity.square).toBe(1);
   });
 });
 

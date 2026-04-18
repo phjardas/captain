@@ -32,7 +32,6 @@ import {
   type HousingTierId,
   housingTiers,
   infiniteResearches,
-  type InfiniteResearchId,
   medicalSupplies,
   type MedicalSupplyId,
   services,
@@ -299,100 +298,102 @@ function SettlementEditor({
               })}
             </Box>
           </FormControl>
-          <FormControl component="fieldset" variant="standard">
-            <FormLabel component="legend">Difficulty</FormLabel>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-                mt: 1,
-              }}
-            >
-              <FormControl>
-                <InputLabel>Food Consumption</InputLabel>
-                <Select
-                  label="Food Consumption"
-                  value={settlement.difficulty?.foodConsumption ?? 1}
-                  onChange={(e) =>
-                    onChange((s) => ({
-                      ...s,
-                      difficulty: {
-                        ...s.difficulty,
-                        foodConsumption: e.target.value as number,
-                      },
-                    }))
-                  }
-                >
-                  {consumptionDifficultyLevels.map((level) => (
-                    <MenuItem key={level.factor} value={level.factor}>
-                      {level.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-              <FormControl>
-                <InputLabel>Goods & Services Consumption</InputLabel>
-                <Select
-                  label="Goods & Services Consumption"
-                  value={settlement.difficulty?.goodsConsumption ?? 1}
-                  onChange={(e) =>
-                    onChange((s) => ({
-                      ...s,
-                      difficulty: {
-                        ...s.difficulty,
-                        goodsConsumption: e.target.value as number,
-                      },
-                    }))
-                  }
-                >
-                  {consumptionDifficultyLevels.map((level) => (
-                    <MenuItem key={level.factor} value={level.factor}>
-                      {level.label}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          </FormControl>
-          <FormControl component="fieldset" variant="standard">
-            <FormLabel component="legend">Infinite Research</FormLabel>
-            <Box
-              sx={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 2,
-                mt: 1,
-              }}
-            >
-              {infiniteResearches.map((research) => (
-                <TextField
-                  key={research.id}
-                  label={research.name}
-                  type="number"
-                  size="small"
-                  value={settlement.infiniteResearch?.[research.id] ?? 0}
-                  onChange={(e) => {
-                    const value = Math.min(
-                      Math.max(0, parseInt(e.target.value) || 0),
-                      research.maxLevel,
-                    );
-                    onChange((s) => ({
-                      ...s,
-                      infiniteResearch: {
-                        ...s.infiniteResearch,
-                        [research.id]: value,
-                      },
-                    }));
-                  }}
-                  helperText={`${research.effectPerLevel} (max ${research.maxLevel})`}
-                  slotProps={{
-                    htmlInput: { min: 0, max: research.maxLevel, step: 1 },
-                  }}
-                />
-              ))}
-            </Box>
-          </FormControl>
+          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+            <FormControl component="fieldset" variant="standard">
+              <FormLabel component="legend">Difficulty</FormLabel>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                  mt: 1,
+                }}
+              >
+                <FormControl>
+                  <InputLabel>Food Consumption</InputLabel>
+                  <Select
+                    label="Food Consumption"
+                    value={settlement.difficulty?.foodConsumption ?? 1}
+                    onChange={(e) =>
+                      onChange((s) => ({
+                        ...s,
+                        difficulty: {
+                          ...s.difficulty,
+                          foodConsumption: e.target.value as number,
+                        },
+                      }))
+                    }
+                  >
+                    {consumptionDifficultyLevels.map((level) => (
+                      <MenuItem key={level.factor} value={level.factor}>
+                        {level.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+                <FormControl>
+                  <InputLabel>Goods & Services Consumption</InputLabel>
+                  <Select
+                    label="Goods & Services Consumption"
+                    value={settlement.difficulty?.goodsConsumption ?? 1}
+                    onChange={(e) =>
+                      onChange((s) => ({
+                        ...s,
+                        difficulty: {
+                          ...s.difficulty,
+                          goodsConsumption: e.target.value as number,
+                        },
+                      }))
+                    }
+                  >
+                    {consumptionDifficultyLevels.map((level) => (
+                      <MenuItem key={level.factor} value={level.factor}>
+                        {level.label}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            </FormControl>
+            <FormControl component="fieldset" variant="standard">
+              <FormLabel component="legend">Infinite Research</FormLabel>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: 2,
+                  mt: 1,
+                }}
+              >
+                {infiniteResearches.map((research) => (
+                  <TextField
+                    key={research.id}
+                    label={research.name}
+                    type="number"
+                    size="small"
+                    value={settlement.infiniteResearch?.[research.id] ?? 0}
+                    onChange={(e) => {
+                      const value = Math.min(
+                        Math.max(0, parseInt(e.target.value) || 0),
+                        research.maxLevel,
+                      );
+                      onChange((s) => ({
+                        ...s,
+                        infiniteResearch: {
+                          ...s.infiniteResearch,
+                          [research.id]: value,
+                        },
+                      }));
+                    }}
+                    helperText={`${research.effectPerLevel} (max ${research.maxLevel})`}
+                    slotProps={{
+                      htmlInput: { min: 0, max: research.maxLevel, step: 1 },
+                    }}
+                  />
+                ))}
+              </Box>
+            </FormControl>
+          </Box>
         </Box>
       </CardContent>
     </Card>

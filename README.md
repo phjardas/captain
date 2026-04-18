@@ -4,7 +4,5 @@ Data taken from [Doubleaxe's Calculator](https://github.com/doubleaxe/daxfb-calc
 
 ## TODO
 
-- Calculate Unity for internet and square
 - Internet
-- Infinite Research
 - Focus Points

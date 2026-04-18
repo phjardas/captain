@@ -105,6 +105,19 @@ describe("calculateWaterDemands", () => {
       { product: "WasteWater", demand: -23.52 },
     ]);
   });
+
+  it("should apply Settlement Water Use infinite research", () => {
+    const demands = calculateWaterDemands({
+      population: 1000,
+      housingTier: 1,
+      infiniteResearch: { SettlementWaterUse: 10 },
+    });
+
+    expect(demands).toEqual([
+      { product: "Water", demand: 37.6 },
+      { product: "WasteWater", demand: -31.36 },
+    ]);
+  });
 });
 
 describe("calculateElectricityDemands", () => {

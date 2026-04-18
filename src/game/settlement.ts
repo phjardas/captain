@@ -373,6 +373,54 @@ export type Difficulty = {
   readonly goodsConsumption?: number;
 };
 
+export type InfiniteResearchId =
+  | "VehiclesPollution"
+  | "ShipsPollution"
+  | "TrainsPollution"
+  | "CropYield"
+  | "TreeGrowthSpeed"
+  | "RainwaterYield"
+  | "SettlementWaterUse"
+  | "UnityCapacity"
+  | "HousingCapacity"
+  | "FocusPoints"
+  | "VehicleLimit"
+  | "VehiclesFuelUse"
+  | "ShipsFuelUse"
+  | "TrainsFuelUse"
+  | "RocketsCapacity"
+  | "MaintenanceOutput"
+  | "WorldMineOutput"
+  | "SolarPower";
+
+export type InfiniteResearch = {
+  readonly id: InfiniteResearchId;
+  readonly name: string;
+  readonly maxLevel: number;
+  readonly effectPerLevel: string;
+};
+
+export const infiniteResearches: readonly InfiniteResearch[] = [
+  { id: "VehiclesPollution", name: "Vehicles Pollution", maxLevel: 20, effectPerLevel: "-4% pollution" },
+  { id: "ShipsPollution", name: "Ships Pollution", maxLevel: 20, effectPerLevel: "-4% pollution" },
+  { id: "TrainsPollution", name: "Trains Pollution", maxLevel: 20, effectPerLevel: "-4% pollution" },
+  { id: "CropYield", name: "Crop Yield", maxLevel: 250, effectPerLevel: "+1% yield" },
+  { id: "TreeGrowthSpeed", name: "Tree Growth Speed", maxLevel: 50, effectPerLevel: "+1% growth" },
+  { id: "RainwaterYield", name: "Rainwater Yield", maxLevel: 40, effectPerLevel: "+5% yield" },
+  { id: "SettlementWaterUse", name: "Settlement Water Use", maxLevel: 40, effectPerLevel: "-2% consumption" },
+  { id: "UnityCapacity", name: "Unity Capacity", maxLevel: 60, effectPerLevel: "+5% capacity" },
+  { id: "HousingCapacity", name: "Housing Capacity", maxLevel: 40, effectPerLevel: "+5% capacity" },
+  { id: "FocusPoints", name: "Focus Points", maxLevel: 25, effectPerLevel: "+4% generation" },
+  { id: "VehicleLimit", name: "Vehicle Limit", maxLevel: 60, effectPerLevel: "+5 vehicles" },
+  { id: "VehiclesFuelUse", name: "Vehicles Fuel Use", maxLevel: 35, effectPerLevel: "-1% consumption" },
+  { id: "ShipsFuelUse", name: "Ships Fuel Use", maxLevel: 35, effectPerLevel: "-1% consumption" },
+  { id: "TrainsFuelUse", name: "Trains Fuel Use", maxLevel: 35, effectPerLevel: "-1% consumption" },
+  { id: "RocketsCapacity", name: "Rockets Capacity", maxLevel: 20, effectPerLevel: "+5% payload" },
+  { id: "MaintenanceOutput", name: "Maintenance Output", maxLevel: 50, effectPerLevel: "+1% production" },
+  { id: "WorldMineOutput", name: "World Mine Output", maxLevel: 50, effectPerLevel: "+2% efficiency" },
+  { id: "SolarPower", name: "Solar Power", maxLevel: 200, effectPerLevel: "+2% production" },
+];
+
 export type Settlement = {
   readonly population: number;
   readonly housingTier?: HousingTierId;
@@ -383,6 +431,7 @@ export type Settlement = {
   readonly hasSquare?: boolean;
   readonly activeEdicts?: Partial<Record<EdictId, number>>;
   readonly difficulty?: Difficulty;
+  readonly infiniteResearch?: Partial<Record<InfiniteResearchId, number>>;
 };
 
 export type ProductDemand = {
@@ -507,10 +556,11 @@ export function calculateWaterDemands(
 ): readonly ProductDemand[] {
   const baseWaterDemandPer1000 = 47;
   const baseWasteWaterDemandPer1000 = -39.2;
-  const waterFactor = getEdictFactor(
-    settlement.activeEdicts,
-    "WaterSaver",
-  ).demandFactor;
+  const researchLevel = settlement.infiniteResearch?.SettlementWaterUse ?? 0;
+  const researchFactor = 1 - researchLevel * 0.02;
+  const waterFactor =
+    getEdictFactor(settlement.activeEdicts, "WaterSaver").demandFactor *
+    researchFactor;
 
   return applyHousingFactors(
     [

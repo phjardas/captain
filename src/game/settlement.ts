@@ -557,10 +557,27 @@ export function calculateWasteDemands(
   let biomass = 0;
   let recyclables = 0;
 
+  const amenityEdictFactors: Partial<Record<AmenityId, number>> = {
+    HouseholdGoods: getEdictFactor(
+      settlement.activeEdicts,
+      "MoreHouseholdGoods",
+    ).demandFactor,
+    HouseholdAppliances: getEdictFactor(
+      settlement.activeEdicts,
+      "MoreHouseholdAppliances",
+    ).demandFactor,
+    ConsumerElectronics: getEdictFactor(
+      settlement.activeEdicts,
+      "MoreConsumerElectronics",
+    ).demandFactor,
+  };
+
   const amenitiesBiomass = amenities
     .map((a) =>
       settlement.suppliedAmenities?.includes(a.product)
-        ? (a.biomassProductionPer1000 ?? 0) * (settlement.population / 1000)
+        ? (a.biomassProductionPer1000 ?? 0) *
+          (settlement.population / 1000) *
+          (amenityEdictFactors[a.product] ?? 1)
         : 0,
     )
     .reduce((sum, current) => sum + current, 0);
@@ -586,7 +603,8 @@ export function calculateWasteDemands(
       .map((a) =>
         settlement.suppliedAmenities?.includes(a.product)
           ? (a.recyclablesProductionPer1000 ?? 0) *
-            (settlement.population / 1000)
+            (settlement.population / 1000) *
+            (amenityEdictFactors[a.product] ?? 1)
           : 0,
       )
       .reduce((sum, current) => sum + current, 0);
@@ -595,7 +613,8 @@ export function calculateWasteDemands(
       .map((a) =>
         settlement.suppliedAmenities?.includes(a.product)
           ? (a.wasteForRecyclablesProductionPer1000 ?? 0) *
-            (settlement.population / 1000)
+            (settlement.population / 1000) *
+            (amenityEdictFactors[a.product] ?? 1)
           : 0,
       )
       .reduce((sum, current) => sum + current, 0);

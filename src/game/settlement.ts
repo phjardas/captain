@@ -624,6 +624,10 @@ export function calculateAmenitiesDemands(
       settlement.activeEdicts,
       "MoreHouseholdAppliances",
     ).demandFactor,
+    ConsumerElectronics: getEdictFactor(
+      settlement.activeEdicts,
+      "MoreConsumerElectronics",
+    ).demandFactor,
   };
 
   const goodsFactor = settlement.difficulty?.goodsConsumption ?? 1;

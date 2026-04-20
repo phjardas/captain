@@ -20,7 +20,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import { type Dispatch, type SetStateAction, useState } from "react";
+import { type Dispatch, type SetStateAction, useEffect, useState } from "react";
 import { useGame } from "../game/context.js";
 import { getProduct } from "../game/game.js";
 import {
@@ -41,14 +41,30 @@ import {
 import ProductIcon from "../ProductIcon.js";
 import ProductQuantity from "../ProductQuantity.js";
 
+const STORAGE_KEY = "settlement-calculator";
+
+const defaultSettlement: Settlement = {
+  population: 1920,
+  housingTier: 3,
+  suppliedFoodTypes: ["Potato", "Corn", "Bread", "Vegetables"],
+  suppliedAmenities: ["HouseholdGoods", "HouseholdAppliances"],
+  suppliedServices: ["Biomass", "Recyclables"],
+};
+
 export default function SettlementCalculator() {
-  const [settlement, setSettlement] = useState<Settlement>({
-    population: 1920,
-    housingTier: 3,
-    suppliedFoodTypes: ["Potato", "Corn", "Bread", "Vegetables"],
-    suppliedAmenities: ["HouseholdGoods", "HouseholdAppliances"],
-    suppliedServices: ["Biomass", "Recyclables"],
+  const [settlement, setSettlement] = useState<Settlement>(() => {
+    try {
+      const stored = localStorage.getItem(STORAGE_KEY);
+      return stored ? (JSON.parse(stored) as Settlement) : defaultSettlement;
+    } catch {
+      return defaultSettlement;
+    }
   });
+
+  useEffect(() => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(settlement));
+  }, [settlement]);
+
   const demands = calculateSettlementDemands(settlement);
 
   return (
